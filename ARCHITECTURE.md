@@ -1,4 +1,4 @@
-# Court Rules — Application Architecture
+# Pro Court Rules — Application Architecture
 
 ```mermaid
 flowchart TB

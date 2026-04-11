@@ -1,6 +1,6 @@
 {
-  "name": "Court Rules",
-  "short_name": "CourtRules",
+  "name": "Pro Court Rules",
+  "short_name": "ProCourtRules",
   "description": "Quick answers to tennis rules questions",
   "start_url": "/",
   "display": "standalone",
