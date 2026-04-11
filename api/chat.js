@@ -1,6 +1,11 @@
 import { buildChatPayload } from '../src/services/payloadBuilder.js';
 import { createRateLimiter } from '../src/services/rateLimiter.js';
-import rules from '../src/data/rules.json' with { type: 'json' };
+import { readFileSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const rules = JSON.parse(readFileSync(join(__dirname, '../src/data/rules.json'), 'utf-8'));
 
 const limiter = createRateLimiter({
   maxRequests: 20,
