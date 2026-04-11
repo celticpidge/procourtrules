@@ -83,7 +83,7 @@ Each loop followed red-green-refactor: write failing tests first, implement to p
 - Added `.env` and `.env.local` to `.gitignore`
 - Post-cleanup: Vercel build broke with permission error 126 (filter-branch corrupted file modes) — fixed by adding `chmod +x node_modules/.bin/*` to `vercel.json` buildCommand
 
-### Phase 5: Multi-Source Rule Expansion (In Progress)
+### Phase 5: Multi-Source Rule Expansion
 
 **Goal**: Expand from 1 rule source to 5, with a priority hierarchy for conflict resolution.
 
@@ -106,13 +106,16 @@ Each loop followed red-green-refactor: write failing tests first, implement to p
    - `friend-at-court.json` (87,482 words)
    - `itf-rules.json` (14,368 words)
 4. Upgraded model from `gpt-4o-mini` (128k context) to `gpt-5.4-nano` (400k context) — all ~214k tokens of source material fits comfortably
+5. Updated `payloadBuilder.js` to load all 5 sources with priority hierarchy and hierarchy reasoning instructions in the system prompt
+6. Updated `api/chat.js` to load multi-source data
+7. Updated tests — payloadBuilder tests expanded from 11 to 13
 
-**Remaining steps:**
-- Update `payloadBuilder.js` to load all 5 sources with priority hierarchy
-- Update system prompt with hierarchy reasoning instructions
-- Update `api/chat.js` to load multi-source data
-- Update tests
-- Deploy and test with multi-source questions
+### Phase 6: Rename & Observability
+
+- **Renamed** application from `court-rules` to `procourtrules` across package.json, manifest, and GitHub repo
+- **Fixed `.gitignore` encoding** — `pdf-sources/` entry had been written in UTF-16LE causing NUL bytes; rewrote as clean UTF-8
+- **Added Vercel Speed Insights** (`@vercel/speed-insights`) — `<SpeedInsights />` component in `App.jsx` for Core Web Vitals reporting
+- **Added Vercel Analytics** (`@vercel/analytics`) — `<Analytics />` component in `App.jsx` for page view and event tracking
 
 ---
 
@@ -123,7 +126,7 @@ Each loop followed red-green-refactor: write failing tests first, implement to p
 |---|---|
 | `index.html` | HTML shell with PWA meta tags, loads React app |
 | `src/main.jsx` | React root render with StrictMode |
-| `src/App.jsx` | Root component wiring `useChat` hook to `Header` and `ChatWindow` |
+| `src/App.jsx` | Root component wiring `useChat` hook to `Header` and `ChatWindow`, includes Vercel Speed Insights and Analytics |
 
 ### Services (Business Logic)
 | File | Purpose |
@@ -182,13 +185,13 @@ Each loop followed red-green-refactor: write failing tests first, implement to p
 | File | Tests |
 |---|---|
 | `src/services/chatService.test.js` | 8 tests — message management, validation, immutability |
-| `src/services/payloadBuilder.test.js` | 11 tests — payload structure, model, temperature, system prompt content |
+| `src/services/payloadBuilder.test.js` | 13 tests — payload structure, model, temperature, system prompt content |
 | `src/services/rateLimiter.test.js` | 8 tests — allow/block, window expiry, independent tracking |
 | `api/chat.test.js` | 7 tests — validation, rate limiting, OpenAI integration, error handling |
 | `src/utils/api.test.js` | 4 tests — fetch wrapper, HTTP errors, network failures |
 | `src/hooks/useChat.test.js` | 8 tests — hook state management, API calls, error handling, reset |
 
-**Total: 46 tests, all passing**
+**Total: 48 tests, all passing**
 
 ---
 
@@ -200,5 +203,6 @@ Each loop followed red-green-refactor: write failing tests first, implement to p
 | Testing | Vitest 4.1.2, @testing-library/react, jsdom |
 | AI | OpenAI API (gpt-5.4-nano, 400k context window) |
 | Hosting | Vercel (free tier, serverless functions) |
-| VCS | Git, GitHub (celticpidge/court-rules) |
+| VCS | Git, GitHub (celticpidge/procourtrules) |
+| Observability | Vercel Speed Insights, Vercel Analytics |
 | PDF Processing | pdf-parse 2.4.5 (dev tooling only) |

@@ -23,12 +23,13 @@ When rules conflict, higher-priority sources take precedence.
 - **Frontend:** React 18 + Vite, PWA with offline support
 - **AI:** OpenAI API (gpt-5.4-nano, 400k context window)
 - **Hosting:** Vercel (serverless functions + static site)
-- **Testing:** Vitest with 46 tests across 6 test files
+- **Observability:** Vercel Speed Insights + Vercel Analytics
+- **Testing:** Vitest with 48 tests across 6 test files
 
 ## Project Structure
 
 ```
-court-rules/
+procourtrules/
 ├── api/
 │   ├── chat.js              # Vercel serverless endpoint
 │   └── chat.test.js         # API endpoint tests
@@ -67,8 +68,8 @@ court-rules/
 ### Setup
 
 ```bash
-git clone https://github.com/celticpidge/court-rules.git
-cd court-rules
+git clone https://github.com/celticpidge/procourtrules.git
+cd procourtrules
 npm install
 ```
 
