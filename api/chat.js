@@ -5,7 +5,19 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const rules = JSON.parse(readFileSync(join(__dirname, '../src/data/rules.json'), 'utf-8'));
+const dataDir = join(__dirname, '../src/data');
+
+const sourceFiles = [
+  'pnw-league-regs.json',
+  'usta-league-regs.json',
+  'the-code.json',
+  'friend-at-court.json',
+  'itf-rules.json',
+];
+
+const sources = sourceFiles.map((file) =>
+  JSON.parse(readFileSync(join(dataDir, file), 'utf-8'))
+);
 
 const limiter = createRateLimiter({
   maxRequests: 20,
@@ -29,7 +41,7 @@ export async function handleChatRequest(req, res) {
     });
   }
 
-  const payload = buildChatPayload(messages, rules);
+  const payload = buildChatPayload(messages, sources);
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
