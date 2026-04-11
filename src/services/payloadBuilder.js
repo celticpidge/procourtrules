@@ -48,7 +48,7 @@ export function buildChatPayload(conversation, rules) {
   };
 
   return {
-    model: 'gpt-4o-mini',
+    model: 'gpt-5.4-nano',
     temperature: 0.4,
     messages: [systemMessage, ...conversation],
   };

@@ -79,9 +79,9 @@ describe('buildChatPayload', () => {
     expect(payload.messages[0].role).toBe('system');
   });
 
-  it('uses gpt-4o-mini as the default model', () => {
+  it('uses gpt-5.4-nano as the default model', () => {
     const payload = buildChatPayload([], miniRules);
-    expect(payload.model).toBe('gpt-4o-mini');
+    expect(payload.model).toBe('gpt-5.4-nano');
   });
 
   it('sets a low temperature for factual responses', () => {
