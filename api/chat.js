@@ -11,7 +11,7 @@ const sourceFiles = [
   'pnw-league-regs.json',
   'usta-league-regs.json',
   'the-code.json',
-  'friend-at-court.json',
+  'friend-at-court-unique.json',
   'itf-rules.json',
 ];
 
