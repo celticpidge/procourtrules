@@ -83,4 +83,44 @@ describe('buildChatPayload', () => {
     const payload = buildChatPayload([], miniRules);
     expect(payload.model).toBe('gpt-4o-mini');
   });
+
+  it('sets a low temperature for factual responses', () => {
+    const payload = buildChatPayload([], miniRules);
+    expect(payload.temperature).toBeLessThanOrEqual(0.3);
+  });
+
+  it('system prompt instructs not to guess', () => {
+    const payload = buildChatPayload([], miniRules);
+    const systemContent = payload.messages[0].content;
+    expect(systemContent).toMatch(/never guess|do not.*guess|only.*answer.*using/i);
+  });
+
+  it('includes table data in the system prompt', () => {
+    const rulesWithTable = {
+      categories: [
+        {
+          id: 'test',
+          name: 'Test',
+          rules: [
+            {
+              id: 'T1',
+              title: 'Test Rule',
+              regulation: 'T.01(PNW REG)',
+              text: 'A test rule.',
+              table: {
+                title: 'Test Table',
+                columns: ['Col A', 'Col B'],
+                rows: [['val1', 'val2']],
+              },
+            },
+          ],
+        },
+      ],
+    };
+    const payload = buildChatPayload([], rulesWithTable);
+    const systemContent = payload.messages[0].content;
+    expect(systemContent).toContain('Test Table');
+    expect(systemContent).toContain('val1');
+    expect(systemContent).toContain('Col A');
+  });
 });
