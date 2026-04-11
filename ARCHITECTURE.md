@@ -7,6 +7,8 @@ flowchart TB
         HTML["index.html"]
         Main["src/main.jsx<br/>React entry point"]
         App["src/App.jsx<br/>Root component"]
+        SpeedInsights["@vercel/speed-insights<br/>Core Web Vitals"]
+        VercelAnalytics["@vercel/analytics<br/>Page views & events"]
         
         subgraph Components["React Components"]
             Header["src/components/Header.jsx<br/>Title bar + New Chat button"]
@@ -53,9 +55,9 @@ flowchart TB
         PDFs["pdf-sources/<br/>5 source PDFs"]
     end
 
-    subgraph Tests["Test Suite (46 tests)"]
+    subgraph Tests["Test Suite (48 tests)"]
         T1["chatService.test.js · 8"]
-        T2["payloadBuilder.test.js · 11"]
+        T2["payloadBuilder.test.js · 13"]
         T3["rateLimiter.test.js · 8"]
         T4["chat.test.js · 7"]
         T5["api.test.js · 4"]
@@ -63,6 +65,8 @@ flowchart TB
     end
 
     HTML --> Main --> App
+    App --> SpeedInsights
+    App --> VercelAnalytics
     App --> Hook
     App --> Header
     App --> ChatWindow
