@@ -1,8 +1,8 @@
-# Court Rules — Work Log
+# Pro Court Rules — Work Log
 
 ## Session Overview
 
-Built a complete AI-powered Progressive Web App (PWA) called **Court Rules** that answers natural language questions about PNW tennis league regulations using OpenAI's API. The app was developed from scratch using a **test-driven development (TDD)** approach across 6 development loops, deployed to Vercel, and iteratively improved for accuracy, style, and multi-source rule support.
+Built a complete AI-powered Progressive Web App (PWA) called **Pro Court Rules** that answers natural language questions about PNW tennis league regulations using OpenAI's API. The app was developed from scratch using a **test-driven development (TDD)** approach across 6 development loops, deployed to Vercel, and iteratively improved for accuracy, style, and multi-source rule support.
 
 ---
 
@@ -50,7 +50,7 @@ Each loop followed red-green-refactor: write failing tests first, implement to p
   - `MessageBubble.jsx` — User messages (green) and assistant messages (dark) with 🎾 avatar
   - `SuggestedQuestions.jsx` — 6 pre-written example questions displayed as clickable chips
   - `TypingIndicator.jsx` — Animated bouncing dots shown while waiting for AI response
-  - `Header.jsx` — App title "Court Rules", subtitle, and conditional "New Chat" reset button
+  - `Header.jsx` — App title "Pro Court Rules", subtitle, and conditional "New Chat" reset button
 
 ### Phase 2: PWA Configuration & Deployment (Loop 6)
 

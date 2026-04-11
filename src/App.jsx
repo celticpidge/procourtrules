@@ -1,6 +1,7 @@
 import Header from './components/Header.jsx';
 import ChatWindow from './components/ChatWindow.jsx';
 import { useChat } from './hooks/useChat.js';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import './assets/styles/App.css';
 
 export default function App() {
@@ -8,6 +9,7 @@ export default function App() {
 
   return (
     <div className="app">
+      <SpeedInsights />
       <Header onReset={messages.length > 0 ? reset : null} />
       <ChatWindow
         messages={messages}

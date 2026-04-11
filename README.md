@@ -1,4 +1,4 @@
-# Court Rules
+# Pro Court Rules
 
 An AI-powered Progressive Web App that answers natural language questions about PNW tennis league regulations. Built for tennis players and team captains who need quick, accurate rule lookups without reading through pages of regulations.
 
