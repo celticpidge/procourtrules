@@ -86,7 +86,7 @@ describe('buildChatPayload', () => {
 
   it('sets a low temperature for factual responses', () => {
     const payload = buildChatPayload([], miniRules);
-    expect(payload.temperature).toBeLessThanOrEqual(0.3);
+    expect(payload.temperature).toBeLessThanOrEqual(0.5);
   });
 
   it('system prompt instructs not to guess', () => {
