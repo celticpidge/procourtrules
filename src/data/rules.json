@@ -1,0 +1,549 @@
+{
+  "source": "PNW League Regulations (Updated 8/18/2025)",
+  "categories": [
+    {
+      "id": "waivers-amendments",
+      "name": "Waivers & Amendments",
+      "icon": "📋",
+      "rules": [
+        {
+          "id": "1.02A",
+          "title": "Waiver of Regulations",
+          "regulation": "1.02A(1)(PNWREG)",
+          "text": "A waiver may be submitted for any PNW Regulation. Waivers will be considered based on the hardship of the specific situation, alternative options which have been tried or failed, and/or how the waiver will benefit the Local League or PNW Section."
+        },
+        {
+          "id": "1.02B",
+          "title": "Amendments",
+          "regulation": "1.02B(1)(PNWREG)",
+          "text": "PNW Regulations may be amended at any time by the PNW Adult Competition Committee with approval from the PNW Board of Directors."
+        },
+        {
+          "id": "1.02C",
+          "title": "Written Interpretation",
+          "regulation": "1.02C(1)(PNW REG)",
+          "text": "The final interpretation of any PNW Regulation will be determined by the PNW Regulation Subcommittee and the PNW Section League Coordinator."
+        }
+      ]
+    },
+    {
+      "id": "league-program",
+      "name": "League Program",
+      "icon": "🎾",
+      "rules": [
+        {
+          "id": "1.04A",
+          "title": "League Organization",
+          "regulation": "1.04A(1)(PNW REG)",
+          "text": "The PNW has the option to provide additional leagues (* denotes leagues without a Section Championship). Regional League Coordinators are also authorized to introduce supplementary non-advancing Local Leagues.",
+          "table": {
+            "title": "League Program Organization at the PNW Level",
+            "columns": ["Division", "Age Group", "League Format", "NTRP Levels"],
+            "rows": [
+              ["Adult", "18 & Over", "1-Singles/2 Doubles", "2.5 Men, Open"],
+              ["Adult", "40 & Over", "1-Singles/2 Doubles or 3 Doubles", "2.5, 5.0, Open"],
+              ["Adult", "65 & Over", "3-Doubles", "6.0, 7.0, 8.0, 9.0"],
+              ["Adult", "70 & Over*", "3-Doubles", "Open"],
+              ["Adult", "Tri-Level*", "3-Doubles", "4.5/4.0/3.5, 4.0/3.5/3.0"],
+              ["Adult", "Combo*", "3-Doubles", "5.5, 6.5, 7.5, 8.5, 9.5"],
+              ["Adult", "One Doubles", "1-Doubles", "2.5, 3.0, 3.5, 4.0, 4.5, 5.0"],
+              ["Adult", "Flex Singles*", "1-Singles", "2.5, 3.0, 3.5, 4.0, 4.5, 5.0"],
+              ["Mixed", "55 & Over", "3-Doubles", "6.0, 7.0, 8.0, 9.0"],
+              ["Mixed", "Coed*", "WTT", "2.5, 3.0, 3.5, 4.0, 4.5, 5.0/6.0, 7.0, 8.0, 9.0"],
+              ["Mixed", "18 & Over", "3 Doubles", "5.0"],
+              ["Mixed", "40 & Over", "3 Doubles", "5.0"]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "administration",
+      "name": "Administration & Roster",
+      "icon": "🗂️",
+      "rules": [
+        {
+          "id": "1.04B",
+          "title": "Administration",
+          "regulation": "1.04B(1)a(PNW REG)",
+          "text": "The PNW Adult Competition Committee shall assist to determine procedural and certain operational matters with League in the PNW. The committee members will be appointed by the President of the PNW Board of Directors."
+        },
+        {
+          "id": "1.04C-1a",
+          "title": "Roster Additions",
+          "regulation": "1.04C(1)a(PNW REG)",
+          "text": "Players may be added to the roster at any time before the last two scheduled matches of the season providing the team remains in compliance with all other regulations. Exception: One Doubles, Mixed 55, Adult 65 — players may be added to the roster with one match remaining on the local league schedule."
+        },
+        {
+          "id": "1.04C-1b",
+          "title": "Single Team League Registration",
+          "regulation": "1.04C(1)b(PNW REG)",
+          "text": "Single Team Leagues must comply with the local league registration deadline for registering their team. Single Team Leagues may add players until the posted deadline. This only applies to Adult 18 & Over (2.5 men, Open), Adult 40 & Over (2.5, 5.0, Open), Adult 65 & Over, Mixed 55 & Over, Coed 18-39, Coed and One Doubles Local Leagues."
+        }
+      ]
+    },
+    {
+      "id": "team-composition",
+      "name": "Team Composition",
+      "icon": "👥",
+      "rules": [
+        {
+          "id": "1.04D",
+          "title": "Team Composition Requirements",
+          "regulation": "1.04D(4)a(PNW REG)",
+          "text": "A team shall consist of players eligible to compete at a specific NTRP level of competition.",
+          "table": {
+            "title": "Team Composition",
+            "columns": ["Division", "Age Group", "Min Players", "Gender", "NTRP Level"],
+            "rows": [
+              ["Adult", "18 & Over 2.5 Men/Open", "5", "Same Gender", "A player's NTRP rating level shall not exceed the team NTRP level. Combined NTRP rating levels of partners shall not exceed the team NTRP level."],
+              ["Adult", "40 & Over 2.5/5.0/Open", "5", "Same Gender", "A player's NTRP rating level shall not exceed the team NTRP level."],
+              ["Adult", "65 & Over 6.0,7.0,8.0,9.0", "6", "Same Gender", "Combined NTRP rating levels of partners shall not exceed the team NTRP level. Minimum NTRP: 6.0=2.5, 7.0=3.0, 8.0=3.5, 9.0=4.0"],
+              ["Adult", "70 & Over Open", "6", "Same Gender", "All NTRP rating levels — must play in order of strength"],
+              ["Adult", "One Doubles 2.5–5.0", "2", "Same Gender", "A player's NTRP rating level shall not exceed the team NTRP level."],
+              ["Adult", "Flex Singles 2.5–5.0", "1", "Same Gender", "A player's NTRP rating level shall not exceed the team NTRP level."],
+              ["Coed", "18-39 or 18 & Over", "2 Men 2 Women", "Men and Women", "A player's NTRP rating level shall not exceed the team NTRP level. Combined NTRP of partners shall not exceed team level. Minimum NTRP: 6.0=2.5, 7.0=3.0, 8.0=3.5, 9.0=4.0"],
+              ["Mixed", "55 & Over 6.0,7.0,8.0,9.0", "3 Men 3 Women", "Men and Women", "Combined NTRP rating levels of partners shall not exceed the team NTRP level. Minimum NTRP: 6.0=2.5, 7.0=3.0, 8.0=3.5, 9.0=4.0"]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "player-eligibility",
+      "name": "Player Eligibility",
+      "icon": "✅",
+      "rules": [
+        {
+          "id": "1.04E-1a",
+          "title": "PNW Local Area Boundaries",
+          "regulation": "1.04E(1)a(PNW REG)",
+          "text": "Pacific Northwest Local Area Boundaries:",
+          "details": [
+            "Alaska Area",
+            "Eastern Washington Area: All points East of the Cascades, Northern Idaho north of the 45th parallel, the Columbia River Gorge, and Baker, Gilliam, Grant, Hood River, Morrow, Sherman, Umatilla, Wasco, Wallowa, Union, and Wheeler counties.",
+            "Northwest Washington Area: All points between Kent and Bellingham, including the greater Seattle/Bellevue/Everett areas and Bainbridge Island. (Boeing Employees Tennis Club members in good standing are exempt from being considered out-of-area and may play as residents of Northwest Washington.)",
+            "Southwest Washington Area: Pierce, Thurston, Lewis, Mason, Grays Harbor counties, Olympic Peninsula & Kitsap County except Bainbridge plus So King County towns: Vashon, Federal Way, Auburn, Pacific, Algona, Enumclaw. (Bainbridge Island residents who are members in good standing at Kitsap Tennis & Athletic Club may play out of Kitsap as a Southwest Washington resident.)",
+            "Northern Oregon Area: Greater Portland Metro Area, Vancouver, Longview, Camas",
+            "Southern Oregon Area: Salem, Albany, Corvallis, Salishan/Oregon Coast, Eugene, Central Oregon, Klamath Falls, Medford, Roseburg, Coos Bay, Grants Pass, Ashland, Clatsop, Tillamook counties."
+          ]
+        },
+        {
+          "id": "1.04E-1b",
+          "title": "Out-of-Area Limits — Adult 18 & Over / 40 & Over",
+          "regulation": "1.04E(1)b(PNW REG)",
+          "text": "Throughout the entire league season for Adult 18 & Over and Adult 40 & Over, no more than four rostered players may reside outside the Local Area boundaries (no more than three rostered players for 2.5 and 5.0 divisions)."
+        },
+        {
+          "id": "1.04E-1c",
+          "title": "Out-of-Area Limits — One Doubles",
+          "regulation": "1.04E(1)c(PNW REG)",
+          "text": "Throughout the entire league season for One Doubles, no more than one rostered player may reside outside the Local Area boundaries."
+        },
+        {
+          "id": "1.04E-1d",
+          "title": "Out-of-Area Limits — Coed 18-39",
+          "regulation": "1.04E(1)d(PNW REG)",
+          "text": "Throughout the entire league season for Coed 18-39, no more than two rostered players may reside outside the Local Area boundaries."
+        },
+        {
+          "id": "1.04E-1e",
+          "title": "Out-of-Area Limits — All Other Leagues",
+          "regulation": "1.04E(1)e(PNW REG)",
+          "text": "Throughout the entire league season for all other leagues, no more than three rostered players may reside outside the Local Area boundaries."
+        },
+        {
+          "id": "1.04E-1f",
+          "title": "Ineligible Player Removal",
+          "regulation": "1.04E(1)f(PNW REG)",
+          "text": "If no matches have been played by the ineligible players, the captain may choose which player is removed from the roster. If matches have been played by all ineligible players then they are removed based on their registration date with the last player registered the first one removed. Matches played by an ineligible player will be scored as a default."
+        },
+        {
+          "id": "1.04E-1g",
+          "title": "Photo ID Requirement",
+          "regulation": "1.04E(1)g(PNW REG)",
+          "text": "Players must be prepared to show Government Issue photo I.D. when asked by PNW staff or designated volunteer."
+        }
+      ]
+    },
+    {
+      "id": "ntrp-ratings",
+      "name": "NTRP Ratings",
+      "icon": "📊",
+      "rules": [
+        {
+          "id": "1.04F-1a",
+          "title": "In-Level Requirement — Adult 18 & Over / 40 & Over",
+          "regulation": "1.04F(1)a(PNW REG)",
+          "text": "Throughout the entire league season, Adult 18 & Over and Adult 40 & Over teams must have 50% of the rostered players rated \"in-level.\" Exceptions: (a) Teams that advance to a National Championship are exempt from this rule for one year. (b) Flights with only two teams must have 40% of the rostered players rated in-level. This does not apply to individual line-ups in team matches."
+        },
+        {
+          "id": "1.04F-1b",
+          "title": "In-Level Requirement — One Doubles",
+          "regulation": "1.04F(1)b(PNW REG)",
+          "text": "Throughout the entire league season, One Doubles teams must have 50% of the rostered players rated \"in-level.\" In any One Doubles individual match, at least one doubles player must be at level."
+        },
+        {
+          "id": "1.04F-1c",
+          "title": "Ineligible Player Removal (Ratings)",
+          "regulation": "1.04F(1)c(PNW REG)",
+          "text": "If no matches have been played by the ineligible players, the captain may choose which players are removed from the roster. If matches have been played by all ineligible players the player(s) are removed based on their registration date with the last player registered the first one removed."
+        },
+        {
+          "id": "1.04F-1d",
+          "title": "Open Division Minimum Rating",
+          "regulation": "1.04F(1)d(PNW REG)",
+          "text": "For the Adult 18 & Over Open division, players must be rated at least 5.0 to participate."
+        },
+        {
+          "id": "1.04G",
+          "title": "Multiple NTRP Level Participation",
+          "regulation": "1.04G(4)a(PNW REG)",
+          "text": "Players may compete at more than one NTRP level in the same league within the same local area."
+        }
+      ]
+    },
+    {
+      "id": "competition-format",
+      "name": "Competition Format",
+      "icon": "🏆",
+      "rules": [
+        {
+          "id": "2.01C-3a",
+          "title": "Total Team Defaults",
+          "regulation": "2.01C(3)a(PNW REG)",
+          "text": "Captains must alert the area league coordinator immediately when defaulting an entire team match. Total Team Defaults will be recorded in favor of the opponent and the standings will reflect 6-0, 6-0 for all individual matches within a team default. All prior matches of a team that commits a total team default will stand as played. Teams that default an entire team match will not advance to Local League Playoffs or a Sectional Championship."
+        },
+        {
+          "id": "2.01C-3a1",
+          "title": "One Doubles Team Defaults",
+          "regulation": "2.01C(3)a1(PNW REG)",
+          "text": "For One Doubles, teams that default two entire team matches may not advance to Local League Playoffs or a Sectional Championship. Teams that default an entire team match during Championship play will not be eligible to advance."
+        },
+        {
+          "id": "2.01C-3b",
+          "title": "Incomplete Matches",
+          "regulation": "2.01C(3)b(PNW REG)",
+          "text": "Individual matches which are not completed by the end of the season and prior to playoffs, if any, will be recorded as a double default."
+        },
+        {
+          "id": "2.01C-3c",
+          "title": "Inclement Weather Procedures",
+          "regulation": "2.01C(3)c(PNW REG)",
+          "text": "Procedures for matches affected by inclement weather:",
+          "details": [
+            "Day(s) before or day of: When bad weather is known ahead of time, captains are encouraged to work together and reschedule the match.",
+            "Day of and before line-up exchange: If bad weather occurs before teams have exchanged line-ups, captains may agree to \"wait-out\" the conditions or reschedule.",
+            "After match(es) have begun: When bad weather forces a match to be postponed after it has begun, record scores on the scorecard as they stand. Both captains initial both scorecards. Captains work together to reschedule. Once the scorecard is exchanged it cannot be changed if all individual matches have already begun. If individual matches have not started and are played on a different day then those individual matches may be changed on the line-up card."
+          ]
+        },
+        {
+          "id": "2.01C-3d",
+          "title": "Line-Call Help / Line Assistants",
+          "regulation": "2.01C(3)d(PNW REG)",
+          "text": "One Line Assistant to represent each team may be called to the court at any time to assist players making line calls. If only one person is available, then one line assistant may be used. Line Assistants cannot make a line call or foot fault call. They can confirm or over-rule a line call when asked by a player. Line Assistants can confirm an egregious foot fault. Line Assistants may not interpret any other rule of tennis and should stand quietly at both ends of the net. If two Line Assistants disagree on a call, a let is played."
+        },
+        {
+          "id": "2.01C-3e",
+          "title": "Point Penalty System",
+          "regulation": "2.01C(3)e(PNW REG)",
+          "text": "PNW League Coordinators may use the Point Penalty System at their discretion during any League match in accordance with the Point Penalty System as described in Friend at Court."
+        },
+        {
+          "id": "2.01C-4a",
+          "title": "Scoring Format",
+          "regulation": "2.01C(4)a(PNW REG)",
+          "text": "Best of three sets. In lieu of a 3rd set, a 10-point match tiebreak shall be played. Regular scoring in all areas except Northwest Washington and Southwest Washington. No-ad will be used in Northwest Washington and Southwest Washington for all local league matches. No-ad will be used for all Northwest Washington playoff matches. Regular scoring will be used for all Southwest Washington playoff matches."
+        },
+        {
+          "id": "2.01C-5a",
+          "title": "Official Match Clock",
+          "regulation": "2.01C(5)a(PNW REG)",
+          "text": "Official Match Clock is indicated by a cell phone."
+        },
+        {
+          "id": "2.01C-5b",
+          "title": "Lateness Penalties — Local League",
+          "regulation": "2.01C(5)b(PNW REG)",
+          "text": "When a player is late in arriving for the player's scheduled match time, and their court is available, the captain shall start the lateness penalty clock. A player is not deemed to have arrived until the player is properly clothed, equipped, and ready to play. Exceptions may be granted for circumstances outside human control (natural disasters, sudden infrastructure failures, emergency transportation interruption).",
+          "details": [
+            "5 minutes or less late: Loss of service toss plus one game",
+            "5:01–10 minutes late: Loss of service toss plus 2 games",
+            "10:01 or more minutes late: Default",
+            "Late players receive the benefit of at least a 7-minute warm-up."
+          ]
+        },
+        {
+          "id": "2.01C-5b-playoffs",
+          "title": "Lateness Penalties — Playoffs / Single Weekend Leagues",
+          "regulation": "2.01C(5)b(PNW REG)",
+          "text": "Single Weekend Leagues and Local League Playoff matches follow Friend at Court lateness penalties, unless the Tournament Director or Referee deems an exception for extenuating circumstances.",
+          "details": [
+            "5 minutes or less late: Loss of service toss plus one game",
+            "5:01–10 minutes late: Loss of service toss plus 2 games",
+            "10:01–15 minutes late: Loss of service toss plus 3 games",
+            "15 or more minutes late: Default"
+          ]
+        },
+        {
+          "id": "2.01C-6a",
+          "title": "Player Registration / TennisLink",
+          "regulation": "2.01C(6)a(PNW REG)",
+          "text": "All players participating in the match must be listed online with TennisLink prior to the initial exchange with the opposing captain. In the event a player is not listed, the point penalty and individual match default procedures are to be used if play is delayed while waiting for an unregistered player to register. All players must be registered before taking a court for warm-up."
+        },
+        {
+          "id": "2.01C-6b",
+          "title": "Split Start Times / Line-Up Exchange",
+          "regulation": "2.01C(6)b(PNW REG)",
+          "text": "When match start times are split into more than one match start time on the same day, the complete line-up (all 3, 4 or 5 lines) must be exchanged at the start time of the first match. Any individual matches not exchanged at the first match start time will be defaults and recorded 6-0, 6-0 in favor of the opponent. If a team match is played on multiple days, then the remaining matches are exchanged on the new date played."
+        }
+      ]
+    },
+    {
+      "id": "standings-tiebreakers",
+      "name": "Standings & Tiebreakers",
+      "icon": "📈",
+      "rules": [
+        {
+          "id": "2.02A-1a",
+          "title": "Standings Tiebreaker Order",
+          "regulation": "2.02A(1)a(PNW REG)",
+          "text": "Team Match wins will be used to determine standings. If there is a tie in team match wins, the following shall be used to break the tie in the order listed until the tie is broken:",
+          "details": [
+            "1. Individual Wins",
+            "2. Head-to-Head",
+            "3. Least Sets Lost",
+            "4. Least Games Lost",
+            "5. Head-to-Head Individual Wins",
+            "6. Head-to-Head Least Sets Lost",
+            "7. Head-to-Head Least Games Lost",
+            "8. Coin Flip"
+          ]
+        },
+        {
+          "id": "2.02A-1b",
+          "title": "Adult 40 & Over 2-2 Tie (4 Lines)",
+          "regulation": "2.02A(1)b(PNW REG)",
+          "text": "For Adult 40 & Over league with 4 lines for an individual team match, if a team match ends in an exact 2-2 tie, the following shall be used to break the tie: Least Sets Lost, then Least Games Lost. If there is still a tie, TennisLink is programmed to determine the winner as the team which won the #1 doubles position."
+        }
+      ]
+    },
+    {
+      "id": "championships",
+      "name": "Championships & Advancement",
+      "icon": "🥇",
+      "rules": [
+        {
+          "id": "2.02B-1a",
+          "title": "Playoff Eligibility — Matches Required",
+          "regulation": "2.02B(1)a(PNW REG)",
+          "text": "All players must play the required number of matches during a multi-week regular season to be eligible to play in Local League Playoffs. One default received may count as a match played. One match is required for Eastern Washington Area Championships and One Weekend Leagues.",
+          "table": {
+            "title": "PNW Championship Advancement — Matches Required",
+            "columns": ["To Advance To:", "Multi-Week Local League Playoff", "Sectional Championship"],
+            "rows": [
+              ["Adult 18 & Over", "2 (1 default allowed)", "2 (1 default allowed)"],
+              ["Adult 40 & Over", "2 (1 default allowed)", "2 (1 default allowed)"],
+              ["Adult 55 & Over", "2 (1 default allowed)", "2 (1 default allowed)"],
+              ["Mixed 18 & Over", "2 (1 default allowed)", "2 (1 default allowed)"],
+              ["Mixed 40 & Over", "2 (1 default allowed)", "2 (1 default allowed)"],
+              ["One Doubles", "1 (1 default allowed)", "1 (1 default allowed)"],
+              ["Adult 65 & Over", "1 (1 default allowed)", "1 (1 default allowed)"],
+              ["Mixed 55 & Over", "1 (1 default allowed)", "1 (1 default allowed)"]
+            ]
+          }
+        },
+        {
+          "id": "2.02B-1b",
+          "title": "Single Team League Advancement",
+          "regulation": "2.02B(1)b(PNW REG)",
+          "text": "Single team leagues as designated in 1.04C(1)b may advance directly to Sectionals and are exempt from the matches-played requirement."
+        },
+        {
+          "id": "2.03A-2a1",
+          "title": "Sectional Championship — Team Declaration",
+          "regulation": "2.03A(2)a(1)(PNW REG)",
+          "text": "Players who qualify to play in a Sectional Championship in two or more Local Areas at the same NTRP level must declare which team they will represent prior to the first match played by any such team. If a player does not declare ahead of time, the first match played by that player in the Sectional Championship will be the team they will represent. Players who qualify at different NTRP levels in a Sectional Championship may compete on all teams."
+        },
+        {
+          "id": "2.03A-5a",
+          "title": "Minimum Team Members at Section Championship",
+          "regulation": "2.03A(5)a(PNW REG)",
+          "text": "At all Section Championships, a minimum number of team members from the final local league roster must individually register, be available, and eligible to compete. The required minimum may be reduced with an approved waiver. Registration minimums will not be waived.",
+          "table": {
+            "title": "Minimum Team Members Required at PNW Section Championship",
+            "columns": ["Division", "Age Group", "Minimum Number", "Minimum With Waiver"],
+            "rows": [
+              ["Adult", "18 & Over 2.5, 5.0, Open", "5", "3"],
+              ["Adult", "18 & Over 3.0, 3.5, 4.0, 4.5", "8", "4"],
+              ["Adult", "40 & Over 2.5, 5.0, Open", "5", "3"],
+              ["Adult", "40 & Over 3.0, 3.5, 4.0, 4.5", "7", "5"],
+              ["Adult", "55 & Over", "6", "4"],
+              ["One Doubles", "18 & Over", "2", "2"],
+              ["Adult 65 & Over", "65 & Over", "6", "4"],
+              ["Mixed 18 & Over", "18 & Over", "3 Men 3 Women", "2 Men 2 Women"],
+              ["Mixed 40 & Over", "40 & Over", "3 Men 3 Women", "2 Men 2 Women"],
+              ["Mixed 55 & Over", "55 & Over", "3 Men 3 Women", "2 Men 2 Women"]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "championship-scoring",
+      "name": "Championship Match & Scoring",
+      "icon": "📝",
+      "rules": [
+        {
+          "id": "2.03E",
+          "title": "Team Match Format at Section Championships",
+          "regulation": "2.03E(a)(PNW REG)",
+          "text": "A team match consists of the individual matches shown below. The team winning the majority of individual matches will be awarded one team point. A majority of the individual matches must actually be played to constitute a valid team match.",
+          "table": {
+            "title": "Team Match and Scoring at PNW Section Championships",
+            "columns": ["Division/Age Group", "Team Match", "One Team Point Awarded For"],
+            "rows": [
+              ["Adult 18 & Over 3.0, 3.5, 4.0, 4.5", "2 Singles / 3 Doubles", "3 Individual Matches Won"],
+              ["Adult 18 & Over 2.5, 5.0, Open", "1 Singles / 3 Doubles", "2 Individual Matches Won"],
+              ["Adult 40 & Over 3.0, 3.5, 4.0, 4.5", "1 Singles / 3 Doubles", "3 individual matches won; If tied 2-2: (a) Least sets lost (b) Least games lost (c) Game winning percentage (d) Winner of No. 1 Doubles"],
+              ["Adult 40 & Over 2.5, 5.0, Open", "1 Singles / 2 Doubles or 3 Doubles", "2 Individual Matches Won"],
+              ["Mixed 18 & Over", "3 Doubles", "2 Individual Matches Won"],
+              ["Mixed 40 & Over", "3 Doubles", "2 Individual Matches Won"],
+              ["One Doubles", "One Doubles", "1 Individual Match Won"],
+              ["Adult 65 & Over", "3 Doubles", "2 Individual Matches Won"],
+              ["Mixed 55 & Over", "3 Doubles", "2 Individual Matches Won"]
+            ]
+          }
+        },
+        {
+          "id": "2.03E-defaults",
+          "title": "Allowable Defaults at Section Championship",
+          "regulation": "2.03E(a)(PNW REG)",
+          "text": "Minimum eligible players required and maximum positions that can be defaulted per match at PNW Section Championships.",
+          "table": {
+            "title": "Allowable Defaults at PNW Section Championship",
+            "columns": ["Division/Age Group", "Min Eligible Players Per Match", "Max Defaults", "Default Order"],
+            "rows": [
+              ["Adult 18 & Over 2.5, 5.0, Open", "3", "1", "No. 1 Singles or No. 2 Doubles"],
+              ["Adult 18 & Over 3.0, 3.5, 4.0, 4.5", "4", "2", "Singles: No. 2 before No. 1; Doubles: No. 3 before No. 2 before No. 1"],
+              ["Adult 40 & Over 2.5, 5.0, Open", "3", "1", "No. 1 Singles or No. 2 Doubles"],
+              ["Adult 40 & Over 3.0, 3.5, 4.0, 4.5", "5", "1", "No. 1 Singles or No. 3 Doubles"],
+              ["Adult 55 & Over", "4 eligible to combine/compete", "1", "No. 3 Doubles"],
+              ["One Doubles 18 & Over", "0", "0", "None"],
+              ["Adult 65 & Over", "4 eligible to combine/compete", "1", "No. 3 Doubles"],
+              ["Mixed 18 & Over", "4 eligible to combine/compete", "1", "No. 3 Doubles"],
+              ["Mixed 40 & Over", "4 eligible to combine/compete", "1", "No. 3 Doubles"],
+              ["Mixed 55 & Over", "4 eligible to combine/compete", "1", "No. 3 Doubles"]
+            ]
+          }
+        },
+        {
+          "id": "2.03I",
+          "title": "Lateness Penalties — Sectional Championship",
+          "regulation": "2.03I1(PNW REG)",
+          "text": "When a player is late in arriving at a Sectional Championship and their court is available, the Tournament Desk shall start the lateness penalty clock unless the Tournament Director or Referee deems an exception. A player is not deemed to have arrived until properly clothed, equipped, and ready to play.",
+          "details": [
+            "5 minutes or less late: Loss of service toss plus one game",
+            "5:01–10 minutes late: Loss of service toss plus 2 games",
+            "10:01–15 minutes late: Loss of service toss plus 3 games",
+            "15 or more minutes late: Default",
+            "Late players receive the benefit of at least a 7-minute warm-up."
+          ]
+        },
+        {
+          "id": "2.03K",
+          "title": "Total Team Default at Section Championships",
+          "regulation": "2.03K(1)a(PNW REG)",
+          "text": "A Grievance will be filed by the SLC against Captain(s) and all rostered team members of the defaulting team. Team penalties may include but are not limited to non-advancement, disqualification, or suspension."
+        }
+      ]
+    },
+    {
+      "id": "ntrp-disqualification",
+      "name": "NTRP Disqualification & Ratings",
+      "icon": "⚠️",
+      "rules": [
+        {
+          "id": "2.04B-2a1",
+          "title": "Dynamic Disqualification — Local Playoffs",
+          "regulation": "2.04B(2)a1(PNW REG)",
+          "text": "Dynamic rating calculations will be run throughout play at all Local League Playoffs."
+        },
+        {
+          "id": "2.04B-2b1",
+          "title": "Dynamic Disqualification — Sectionals",
+          "regulation": "2.04B(2)b1(PNW REG)",
+          "text": "Dynamic rating calculations will be run after the conclusion of all Sectional Championships."
+        },
+        {
+          "id": "2.04E",
+          "title": "Scoring of DNTRP Disqualification",
+          "regulation": "2.04E(1)a(PNW REG)",
+          "text": "During local league play, all matches played at the disqualified level will be reversed in favor of the opponent, 6-0, 6-0. Players who are DNTRP disqualified may join a team at a higher level at any time if otherwise eligible and the team remains in compliance with all other regulations."
+        },
+        {
+          "id": "2.05B-3b1",
+          "title": "Year-End Computer Ratings",
+          "regulation": "2.05B3(b)1(PNW REG)",
+          "text": "Players who are found to have valid computer ratings that place them above the NTRP level at which they are competing may continue their participation at the lower NTRP level through the conclusion of the Local League Playoffs. They will not be allowed to participate at the lower NTRP level for the Sectional Championships."
+        },
+        {
+          "id": "2.05B-3c1",
+          "title": "Exception for 5.0 Mixed Rosters",
+          "regulation": "2.05B3(c)1(PNW REG)",
+          "text": "Players on 5.0 Mixed 18 & Over or Mixed 40 & Over Early Start teams (combined ratings of 5.0) may continue participating through all championship levels unless their year-end rating reaches the \"clearly above level\" threshold or they receive an automatic appeal up. If either occurs, they must immediately adjust to their new NTRP level. Matches played prior to this adjustment will remain valid."
+        }
+      ]
+    },
+    {
+      "id": "move-up-split-up",
+      "name": "Move Up / Split Up",
+      "icon": "🔄",
+      "rules": [
+        {
+          "id": "2.06A",
+          "title": "One Doubles Tri-Level Split-Up Requirement",
+          "regulation": "2.06A(2)a(PNW REG)",
+          "text": "Any One Doubles team that qualifies for or advances to the Tri-Level National Invitational must adhere to the following eligibility requirement for the subsequent championship year: No player may be rostered on a One Doubles team with any teammate from the previous year's advancing team at the same NTRP level."
+        }
+      ]
+    },
+    {
+      "id": "grievances",
+      "name": "Grievances",
+      "icon": "⚖️",
+      "rules": [
+        {
+          "id": "3.03A-1a",
+          "title": "Grievance Fee",
+          "regulation": "3.03A(1)a(PNW REG)",
+          "text": "All grievances, except NTRP grievances, require a $50 fee payable to PNW. If a grievance is upheld, the $50 fee is returned. If the grievance is denied, the $50 fee will not be returned."
+        },
+        {
+          "id": "3.03A-1b",
+          "title": "Suspension Point System",
+          "regulation": "3.03A(1)b(PNW REG)",
+          "text": "All league programs organized at the PNW Level will follow the League Suspension Point System and Grievance Process."
+        },
+        {
+          "id": "3.03A-1c",
+          "title": "Evidence Restrictions",
+          "regulation": "3.03A(1)c(PNW REG)",
+          "text": "Personal or third-party audio and video recordings are not accepted as evidence in the PNW grievance or grievance appeal process. PNW may, at its discretion, review and consider its own official security camera recordings. Only written firsthand accounts will be accepted for consideration."
+        },
+        {
+          "id": "3.03B",
+          "title": "Eligibility Disqualification in Local League",
+          "regulation": "3.03B(4)a(PNW REG)",
+          "text": "In the event of an eligibility disqualification during the local league season and up to 14 days after the end of the local league season, but prior to any playoff, all matches played by the disqualified player shall be considered defaults and those matches shall be considered wins for the opposing players or doubles teams and scored 6-0, 6-0 for determining standings."
+        },
+        {
+          "id": "3.03E",
+          "title": "NTRP Grievances",
+          "regulation": "3.03E(5)a(PNW REG)",
+          "text": "NTRP Grievances will be adjudicated after a championship event."
+        }
+      ]
+    }
+  ]
+}
