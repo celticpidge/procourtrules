@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildChatPayload, getCitedSources } from './payloadBuilder.js';
+import { buildChatPayload } from './payloadBuilder.js';
 
 const miniSources = [
   {
@@ -121,51 +121,7 @@ describe('buildChatPayload', () => {
   });
 });
 
-describe('getCitedSources', () => {
-  it('returns only sources cited in assistant messages', () => {
-    const conversation = [
-      { role: 'user', content: 'What if I am late?' },
-      { role: 'assistant', content: 'Per the PNW League Regulations, you lose a game.' },
-      { role: 'user', content: 'How many minutes?' },
-    ];
-    const cited = getCitedSources(conversation, miniSources);
-    expect(cited).toHaveLength(1);
-    expect(cited[0].id).toBe('pnw-league-regs');
-  });
-
-  it('returns multiple sources when multiple are cited', () => {
-    const conversation = [
-      { role: 'user', content: 'What if I am late?' },
-      { role: 'assistant', content: 'Per the PNW League Regulations, you lose a game. The ITF Rules of Tennis also address this.' },
-      { role: 'user', content: 'Tell me more.' },
-    ];
-    const cited = getCitedSources(conversation, miniSources);
-    expect(cited).toHaveLength(2);
-  });
-
-  it('falls back to all sources when none are cited', () => {
-    const conversation = [
-      { role: 'user', content: 'Hello' },
-      { role: 'assistant', content: 'Hi there! How can I help?' },
-      { role: 'user', content: 'What are the rules?' },
-    ];
-    const cited = getCitedSources(conversation, miniSources);
-    expect(cited).toHaveLength(miniSources.length);
-  });
-
-  it('matches source names case-insensitively', () => {
-    const conversation = [
-      { role: 'user', content: 'Rules?' },
-      { role: 'assistant', content: 'According to the pnw league regulations, the rule is...' },
-      { role: 'user', content: 'More details?' },
-    ];
-    const cited = getCitedSources(conversation, miniSources);
-    expect(cited).toHaveLength(1);
-    expect(cited[0].id).toBe('pnw-league-regs');
-  });
-});
-
-describe('buildChatPayload follow-up behavior', () => {
+describe('buildChatPayload includes all sources on follow-ups', () => {
   it('includes all sources on first message', () => {
     const conversation = [{ role: 'user', content: 'What if I am late?' }];
     const payload = buildChatPayload(conversation, miniSources);
@@ -174,7 +130,7 @@ describe('buildChatPayload follow-up behavior', () => {
     expect(systemContent).toContain('ITF Rules of Tennis');
   });
 
-  it('includes only cited sources on follow-up', () => {
+  it('includes all sources on follow-up', () => {
     const conversation = [
       { role: 'user', content: 'What if I am late?' },
       { role: 'assistant', content: 'Per the PNW League Regulations, you lose a game.' },
@@ -183,17 +139,6 @@ describe('buildChatPayload follow-up behavior', () => {
     const payload = buildChatPayload(conversation, miniSources);
     const systemContent = payload.messages[0].content;
     expect(systemContent).toContain('=== SOURCE: PNW League Regulations');
-    expect(systemContent).not.toContain('=== SOURCE: ITF Rules of Tennis');
-  });
-
-  it('includes follow-up note in system prompt on follow-up', () => {
-    const conversation = [
-      { role: 'user', content: 'What if I am late?' },
-      { role: 'assistant', content: 'Per the PNW League Regulations, you lose a game.' },
-      { role: 'user', content: 'How many minutes?' },
-    ];
-    const payload = buildChatPayload(conversation, miniSources);
-    const systemContent = payload.messages[0].content;
-    expect(systemContent).toMatch(/follow-up/i);
+    expect(systemContent).toContain('=== SOURCE: ITF Rules of Tennis');
   });
 });
