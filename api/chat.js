@@ -30,8 +30,13 @@ const limiter = createRateLimiter({
 });
 
 async function buildRagRequest(messages) {
-  const lastUserMessage = [...messages].reverse().find((m) => m.role === 'user');
-  const queryText = lastUserMessage?.content || '';
+  // Build query from recent user messages so follow-ups have context
+  // e.g. "What happens if my opponent is 12 minutes late?" + "what about sectionals"
+  const userMessages = messages
+    .filter((m) => m.role === 'user')
+    .slice(-3)
+    .map((m) => m.content);
+  const queryText = userMessages.join(' ');
 
   const queryEmbedding = await embedQuery(queryText, process.env.OPENAI_API_KEY);
   const relevantChunks = retrieveChunks(queryEmbedding, embeddings);
@@ -48,13 +53,18 @@ export async function handleChatRequest(req, res) {
   }
 
   const ip = req.headers['x-forwarded-for'] || 'unknown';
-  const rateResult = limiter.check(ip);
+  const bypassKey = req.headers['x-api-key'];
+  const validBypass = process.env.RATE_LIMIT_BYPASS_KEY && bypassKey === process.env.RATE_LIMIT_BYPASS_KEY;
 
-  if (!rateResult.allowed) {
-    return res.status(429).json({
-      error: 'Daily question limit reached. Please try again tomorrow.',
-      retryAfter: rateResult.retryAfter,
-    });
+  let rateResult = { allowed: true, remaining: null };
+  if (!validBypass) {
+    rateResult = limiter.check(ip);
+    if (!rateResult.allowed) {
+      return res.status(429).json({
+        error: 'Daily question limit reached. Please try again tomorrow.',
+        retryAfter: rateResult.retryAfter,
+      });
+    }
   }
 
   const payload = useRag
