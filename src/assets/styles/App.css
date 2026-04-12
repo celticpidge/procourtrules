@@ -277,19 +277,6 @@ body {
   align-items: center;
   gap: 8px;
   margin-top: 10px;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.message-assistant:hover .message-actions {
-  opacity: 1;
-}
-
-/* Keep actions visible once feedback interaction starts */
-.message-actions:has(.feedback-btn-active),
-.message-actions:has(.feedback-form),
-.message-actions:has(.feedback-thanks) {
-  opacity: 1;
 }
 
 .copy-button {

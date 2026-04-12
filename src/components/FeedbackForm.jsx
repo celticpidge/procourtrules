@@ -55,7 +55,6 @@ export default function FeedbackForm({ query, response }) {
   return (
     <div className="feedback-container">
       <div className="feedback-buttons">
-        <span className="feedback-label">Helpful?</span>
         <button
           className={`feedback-btn ${rating === 'positive' ? 'feedback-btn-active' : ''}`}
           onClick={() => handleRating('positive')}
