@@ -54,6 +54,8 @@ export async function handleChatRequest(req, res) {
     });
 
     if (!response.ok) {
+      const errorBody = await response.text().catch(() => '');
+      console.error(`OpenAI API error: ${response.status} ${response.statusText}`, errorBody);
       return res.status(502).json({ error: 'AI service returned an error.' });
     }
 
