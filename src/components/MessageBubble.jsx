@@ -2,8 +2,9 @@ import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
+import FeedbackForm from './FeedbackForm.jsx';
 
-export default function MessageBubble({ role, content }) {
+export default function MessageBubble({ role, content, query }) {
   const isUser = role === 'user';
   const [copied, setCopied] = useState(false);
 
@@ -21,9 +22,12 @@ export default function MessageBubble({ role, content }) {
           <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>{content}</ReactMarkdown>
         )}
         {!isUser && (
-          <button className="copy-button" onClick={handleCopy} aria-label="Copy response">
-            {copied ? '✓ Copied' : '⎘ Copy'}
-          </button>
+          <div className="message-actions">
+            <button className="copy-button" onClick={handleCopy} aria-label="Copy response">
+              {copied ? '✓ Copied' : '⎘ Copy'}
+            </button>
+            <FeedbackForm query={query} response={content} />
+          </div>
         )}
       </div>
     </div>
