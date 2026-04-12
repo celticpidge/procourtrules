@@ -11,16 +11,29 @@ const sourceFiles = [
   'itf-rules.json',
 ];
 
-const CHUNK_SIZE = 500; // target tokens (~4 chars per token)
-const CHUNK_OVERLAP = 50; // overlap in tokens
+const CHUNK_SIZE = 300; // target tokens (~4 chars per token)
+const CHUNK_OVERLAP = 30; // overlap in tokens
+
+// Sub-section markers that indicate a distinct rule context within a section.
+// These insert line breaks in the source text so the chunker can split on them.
+const SUB_SECTION_MARKERS = [
+  { pattern: /Single Weekend Leagues and Local\s+League Playoff/g, prefix: '2.01C(5)b LATENESS - WEEKEND LEAGUES AND LOCAL LEAGUE PLAYOFFS.' },
+];
+
+function preProcessText(text) {
+  for (const marker of SUB_SECTION_MARKERS) {
+    text = text.replace(marker.pattern, `\n${marker.prefix}\n$&`);
+  }
+  return text;
+}
 
 /**
  * Detect section headings in source text lines.
  * Returns the heading string if the line is a heading, null otherwise.
  */
 function extractHeading(line) {
-  // Regulation-style: "1.02A TITLE..." or "1.04 USTA LEAGUE."
-  const regMatch = line.match(/^(\d+\.\d{2}[A-Z]?(?:\(\d+\))?)\s+([A-Z].+)/);
+  // Regulation-style: "1.02A TITLE...", "1.04 USTA LEAGUE.", "2.01C(5)b LATENESS..."
+  const regMatch = line.match(/^(\d+\.\d{2}[A-Z]?(?:\(\d+\))?[a-z]?)\s+([A-Z].+)/);
   if (regMatch) {
     const num = regMatch[1];
     let title = regMatch[2];
@@ -64,7 +77,7 @@ function extractHeading(line) {
 }
 
 function chunkText(text, sourceName, sourceId, priority) {
-  const lines = text.split('\n');
+  const lines = preProcessText(text).split('\n');
 
   // Build word array annotated with current section heading
   let currentHeading = null;
@@ -81,12 +94,28 @@ function chunkText(text, sourceName, sourceId, priority) {
     }
   }
 
-  const chunkWordCount = CHUNK_SIZE * 4 / 5; // rough words-per-chunk (~400 words ≈ 500 tokens)
+  const chunkWordCount = CHUNK_SIZE * 4 / 5; // rough words-per-chunk
   const overlapWords = CHUNK_OVERLAP * 4 / 5;
   const chunks = [];
 
-  for (let i = 0; i < annotatedWords.length; i += chunkWordCount - overlapWords) {
-    const slice = annotatedWords.slice(i, i + chunkWordCount);
+  let i = 0;
+  while (i < annotatedWords.length) {
+    // Determine the natural end of this chunk: either chunkWordCount or a heading change
+    const startHeading = annotatedWords[i].heading;
+    let end = Math.min(i + chunkWordCount, annotatedWords.length);
+
+    // Check for heading change within the window — split at that boundary
+    for (let j = i + 1; j < end; j++) {
+      if (annotatedWords[j].heading !== startHeading) {
+        // Only split if the first part is big enough to be useful
+        if (j - i >= 20) {
+          end = j;
+        }
+        break;
+      }
+    }
+
+    const slice = annotatedWords.slice(i, end);
     if (slice.length < 20) break; // skip tiny trailing chunks
 
     const sectionHeading = slice[0].heading;
@@ -102,6 +131,10 @@ function chunkText(text, sourceName, sourceId, priority) {
       priority,
       text: enrichedText,
     });
+
+    // Advance with overlap, but if we split on a heading boundary, start at that boundary
+    const normalAdvance = i + (chunkWordCount - overlapWords);
+    i = (end < i + chunkWordCount) ? end : normalAdvance;
   }
 
   return chunks;
