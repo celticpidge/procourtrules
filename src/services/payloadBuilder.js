@@ -52,7 +52,7 @@ RESPONSE STYLE:
 - Use bullet points when listing multiple items.
 - If a rule has important exceptions or edge cases, mention them proactively.
 - When relevant, give a practical example to make the rule easier to understand.
-- Within each match context section, only include details relevant to that context's outcome. If the outcome is a default, do NOT also mention warm-up benefits or game penalties that only apply to non-default outcomes.`;
+- CRITICAL: Within each match context section, only include details relevant to that context's outcome. If the outcome is a default, do NOT also mention warm-up benefits or game penalties that only apply to non-default outcomes.`;
 }
 
 function buildSystemPrompt(sources) {
