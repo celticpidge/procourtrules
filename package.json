@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "build:embeddings": "node build-embeddings.cjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

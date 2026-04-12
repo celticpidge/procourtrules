@@ -1,6 +1,7 @@
-import { buildChatPayload } from '../src/services/payloadBuilder.js';
+import { buildChatPayload, buildRagPayload } from '../src/services/payloadBuilder.js';
+import { retrieveChunks, embedQuery, formatRetrievedChunks } from '../src/services/retrieval.js';
 import { createRateLimiter } from '../src/services/rateLimiter.js';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -19,10 +20,30 @@ const sources = sourceFiles.map((file) =>
   JSON.parse(readFileSync(join(dataDir, file), 'utf-8'))
 );
 
+const embeddingsPath = join(dataDir, 'embeddings.json');
+const useRag = existsSync(embeddingsPath);
+const embeddings = useRag ? JSON.parse(readFileSync(embeddingsPath, 'utf-8')) : null;
+
 const limiter = createRateLimiter({
   maxRequests: 20,
   windowMs: 24 * 60 * 60 * 1000,
 });
+
+async function buildRagRequest(messages) {
+  // Build query from recent user messages so follow-ups have context
+  // e.g. "What happens if my opponent is 12 minutes late?" + "what about sectionals"
+  const userMessages = messages
+    .filter((m) => m.role === 'user')
+    .slice(-3)
+    .map((m) => m.content);
+  const queryText = userMessages.join(' ');
+
+  const queryEmbedding = await embedQuery(queryText, process.env.OPENAI_API_KEY);
+  const relevantChunks = retrieveChunks(queryEmbedding, embeddings);
+  const context = formatRetrievedChunks(relevantChunks);
+
+  return buildRagPayload(messages, context);
+}
 
 export async function handleChatRequest(req, res) {
   const { messages } = req.body || {};
@@ -32,16 +53,23 @@ export async function handleChatRequest(req, res) {
   }
 
   const ip = req.headers['x-forwarded-for'] || 'unknown';
-  const rateResult = limiter.check(ip);
+  const bypassKey = req.headers['x-api-key'];
+  const validBypass = process.env.RATE_LIMIT_BYPASS_KEY && bypassKey === process.env.RATE_LIMIT_BYPASS_KEY;
 
-  if (!rateResult.allowed) {
-    return res.status(429).json({
-      error: 'Daily question limit reached. Please try again tomorrow.',
-      retryAfter: rateResult.retryAfter,
-    });
+  let rateResult = { allowed: true, remaining: null };
+  if (!validBypass) {
+    rateResult = limiter.check(ip);
+    if (!rateResult.allowed) {
+      return res.status(429).json({
+        error: 'Daily question limit reached. Please try again tomorrow.',
+        retryAfter: rateResult.retryAfter,
+      });
+    }
   }
 
-  const payload = buildChatPayload(messages, sources);
+  const payload = useRag
+    ? await buildRagRequest(messages)
+    : buildChatPayload(messages, sources);
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
