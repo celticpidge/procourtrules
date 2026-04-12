@@ -11,8 +11,8 @@ const sourceFiles = [
   'itf-rules.json',
 ];
 
-const CHUNK_SIZE = 300; // target tokens (~4 chars per token)
-const CHUNK_OVERLAP = 30; // overlap in tokens
+const TARGET_WORDS = 240; // target words per chunk
+const OVERLAP_WORDS = 24; // overlap in words
 
 // Sub-section markers that indicate a distinct rule context within a section.
 // These insert line breaks in the source text so the chunker can split on them.
@@ -95,8 +95,8 @@ function chunkText(text, sourceName, sourceId, priority) {
     }
   }
 
-  const chunkWordCount = CHUNK_SIZE * 4 / 5; // rough words-per-chunk
-  const overlapWords = CHUNK_OVERLAP * 4 / 5;
+  const chunkWordCount = TARGET_WORDS;
+  const overlapWords = OVERLAP_WORDS;
   const chunks = [];
 
   let i = 0;
@@ -117,7 +117,13 @@ function chunkText(text, sourceName, sourceId, priority) {
     }
 
     const slice = annotatedWords.slice(i, end);
-    if (slice.length < 20) break; // skip tiny trailing chunks
+    if (slice.length < 20) {
+      // Merge tiny trailing fragment into previous chunk instead of dropping it
+      if (chunks.length > 0) {
+        chunks[chunks.length - 1].text += ' ' + slice.map((w) => w.word).join(' ');
+      }
+      break;
+    }
 
     const sectionHeading = slice[0].heading;
     const chunkBody = slice.map((w) => w.word).join(' ');
@@ -144,6 +150,7 @@ function chunkText(text, sourceName, sourceId, priority) {
 async function embedChunks(chunks, apiKey) {
   const batchSize = 100; // OpenAI allows up to 2048 inputs per request
   const allEmbeddings = [];
+  const maxRetries = 5;
 
   for (let i = 0; i < chunks.length; i += batchSize) {
     const batch = chunks.slice(i, i + batchSize);
@@ -151,26 +158,51 @@ async function embedChunks(chunks, apiKey) {
 
     console.log(`  Embedding batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(chunks.length / batchSize)} (${texts.length} chunks)...`);
 
-    const response = await fetch('https://api.openai.com/v1/embeddings', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: 'text-embedding-3-small',
-        input: texts,
-      }),
-    });
+    let lastErr;
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const response = await fetch('https://api.openai.com/v1/embeddings', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            model: 'text-embedding-3-small',
+            input: texts,
+          }),
+        });
 
-    if (!response.ok) {
-      const err = await response.text();
-      throw new Error(`OpenAI embeddings API error: ${response.status} ${err}`);
+        if (!response.ok) {
+          const errText = await response.text();
+          const retryable = [429, 500, 502, 503, 504].includes(response.status);
+          if (!retryable) {
+            throw new Error(`OpenAI embeddings API error: ${response.status} ${errText}`);
+          }
+          throw new Error(`Retryable API error: ${response.status} ${errText}`);
+        }
+
+        const data = await response.json();
+        const embeddings = data.data.sort((a, b) => a.index - b.index).map((d) => d.embedding);
+
+        if (embeddings.length !== batch.length) {
+          throw new Error(`Expected ${batch.length} embeddings, got ${embeddings.length}`);
+        }
+
+        allEmbeddings.push(...embeddings);
+        lastErr = null;
+        break;
+      } catch (err) {
+        lastErr = err;
+        if (attempt < maxRetries) {
+          const delay = 1000 * 2 ** (attempt - 1);
+          console.log(`  Retry ${attempt}/${maxRetries} after ${delay}ms: ${err.message}`);
+          await new Promise((r) => setTimeout(r, delay));
+        }
+      }
     }
 
-    const data = await response.json();
-    const embeddings = data.data.sort((a, b) => a.index - b.index).map((d) => d.embedding);
-    allEmbeddings.push(...embeddings);
+    if (lastErr) throw lastErr;
   }
 
   return allEmbeddings;
@@ -189,6 +221,9 @@ async function main() {
   const allChunks = [];
   for (const file of sourceFiles) {
     const source = JSON.parse(readFileSync(join(dataDir, file), 'utf-8'));
+    if (!source.content || !source.name || !source.id || source.priority == null) {
+      throw new Error(`Source file ${file} is missing required fields (content, name, id, priority)`);
+    }
     const chunks = chunkText(source.content, source.name, source.id, source.priority);
     allChunks.push(...chunks);
     console.log(`  ${source.name}: ${chunks.length} chunks`);
@@ -200,6 +235,10 @@ async function main() {
 
   const embeddings = await embedChunks(allChunks, apiKey);
 
+  if (embeddings.length !== allChunks.length) {
+    throw new Error(`Embedding count mismatch: got ${embeddings.length}, expected ${allChunks.length}`);
+  }
+
   console.log(`\nGenerated ${embeddings.length} embeddings (dimension: ${embeddings[0].length})\n`);
 
   console.log('Step 3: Saving embeddings...\n');
@@ -209,10 +248,11 @@ async function main() {
     embedding: embeddings[i],
   }));
 
+  const json = JSON.stringify(output);
   const outputPath = join(dataDir, 'embeddings.json');
-  writeFileSync(outputPath, JSON.stringify(output));
+  writeFileSync(outputPath, json);
 
-  const sizeMB = (Buffer.byteLength(JSON.stringify(output)) / 1024 / 1024).toFixed(1);
+  const sizeMB = (Buffer.byteLength(json) / 1024 / 1024).toFixed(1);
   console.log(`  Saved ${output.length} chunks with embeddings to embeddings.json (${sizeMB} MB)`);
   console.log('\nDone!');
 }
