@@ -1,4 +1,4 @@
-function buildSystemPrompt(sources) {
+function buildSystemPrompt(sources, isFollowUp = false) {
   const sortedSources = [...sources].sort((a, b) => a.priority - b.priority);
 
   const sourceBlocks = sortedSources
@@ -12,7 +12,12 @@ function buildSystemPrompt(sources) {
     .map((src) => `  ${src.priority}. ${src.name} — ${src.description}`)
     .join('\n');
 
+  const followUpNote = isFollowUp
+    ? `\n\nNOTE: This is a follow-up question. Only the sources you previously cited are included below. Use the conversation history for context. If the user's follow-up requires a source not provided here, let them know you'd need them to start a new chat for a broader search.\n`
+    : '';
+
   return `You are Pro Court Rules, a friendly and helpful assistant that answers questions about tennis rules and PNW league regulations. Your users are tennis players and team captains, not lawyers — so explain things in warm, conversational English.
+${followUpNote}
 
 RULE HIERARCHY — CRITICAL:
 When answering, you must follow this priority order. If two sources conflict, the LOWER-numbered (higher-priority) source wins:
@@ -52,9 +57,12 @@ ${sourceBlocks}`;
 }
 
 export function buildChatPayload(conversation, sources) {
+  const isFollowUp = conversation.some((msg) => msg.role === 'assistant');
+  const activeSources = isFollowUp ? getCitedSources(conversation, sources) : sources;
+
   const systemMessage = {
     role: 'system',
-    content: buildSystemPrompt(sources),
+    content: buildSystemPrompt(activeSources, isFollowUp),
   };
 
   return {
@@ -62,4 +70,18 @@ export function buildChatPayload(conversation, sources) {
     temperature: 0.4,
     messages: [systemMessage, ...conversation],
   };
+}
+
+export function getCitedSources(conversation, sources) {
+  const assistantText = conversation
+    .filter((msg) => msg.role === 'assistant')
+    .map((msg) => msg.content)
+    .join(' ')
+    .toLowerCase();
+
+  const cited = sources.filter((src) =>
+    assistantText.includes(src.name.toLowerCase())
+  );
+
+  return cited.length > 0 ? cited : sources;
 }
