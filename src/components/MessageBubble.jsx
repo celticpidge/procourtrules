@@ -15,7 +15,7 @@ export default function MessageBubble({ role, content }) {
 
   return (
     <div className={`message ${isUser ? 'message-user' : 'message-assistant'}`}>
-      {!isUser && <span className="message-avatar">🎾</span>}
+      {!isUser && <img src="/icons/icon-192x192.svg" alt="" className="message-avatar" />}
       <div className="message-content">
         {isUser ? content : (
           <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>{content}</ReactMarkdown>
