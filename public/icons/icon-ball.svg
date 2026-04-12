@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <rect width="192" height="192" rx="40" fill="#111111"/>
+
+  <!-- Tennis ball - centered -->
+  <circle cx="96" cy="96" r="50" fill="#c8e64c"/>
+  <!-- Ball seam curves -->
+  <path d="M72 64 Q96 96 72 128" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+  <path d="M120 64 Q96 96 120 128" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+</svg>
