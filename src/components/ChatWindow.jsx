@@ -36,7 +36,12 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
         )}
 
         {messages.map((msg, i) => (
-          <MessageBubble key={i} role={msg.role} content={msg.content} />
+          <MessageBubble
+            key={i}
+            role={msg.role}
+            content={msg.content}
+            query={msg.role === 'assistant' && i > 0 ? messages[i - 1].content : undefined}
+          />
         ))}
 
         {isLoading && <TypingIndicator />}

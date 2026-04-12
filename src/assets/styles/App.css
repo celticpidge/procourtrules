@@ -272,9 +272,15 @@ body {
 }
 
 /* Copy Button */
-.copy-button {
-  display: block;
+.message-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
   margin-top: 10px;
+}
+
+.copy-button {
   padding: 4px 10px;
   background: none;
   border: 1px solid var(--border);
@@ -283,17 +289,152 @@ body {
   font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.2s;
-  opacity: 0;
-}
-
-.message-assistant:hover .copy-button {
-  opacity: 1;
+  flex-shrink: 0;
 }
 
 .copy-button:hover {
   background: var(--bg-tertiary);
   color: var(--text-primary);
   border-color: var(--accent);
+}
+
+/* Feedback */
+.feedback-container {
+  display: contents;
+}
+
+.feedback-buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.feedback-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-right: 4px;
+}
+
+.feedback-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  line-height: 1;
+}
+
+.feedback-btn:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--accent);
+}
+
+.feedback-btn-active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+}
+
+.feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  animation: fadeIn 0.2s ease-in;
+}
+
+.feedback-comment {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 48px;
+}
+
+.feedback-comment:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.feedback-comment::placeholder {
+  color: var(--text-secondary);
+}
+
+.feedback-email {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-family: inherit;
+}
+
+.feedback-email:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.feedback-email::placeholder {
+  color: var(--text-secondary);
+}
+
+.feedback-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.feedback-skip {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 14px;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.feedback-skip:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.feedback-submit {
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  padding: 5px 14px;
+  color: white;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.feedback-submit:hover:not(:disabled) {
+  background: var(--accent-dim);
+}
+
+.feedback-submit:disabled,
+.feedback-skip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.feedback-error {
+  font-size: 0.8rem;
+  color: var(--error);
+}
+
+.feedback-thanks {
+  font-size: 0.75rem;
+  color: var(--accent);
 }
 
 /* Typing Indicator */

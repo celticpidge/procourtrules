@@ -18,3 +18,18 @@ export async function sendMessage(messages) {
 
   return data;
 }
+
+export async function sendFeedback({ rating, query, response, comment, email }) {
+  const res = await fetch('/api/feedback', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ rating, query, response, comment, email }),
+  });
+
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.error || 'Failed to submit feedback.');
+  }
+
+  return true;
+}

@@ -25,6 +25,39 @@ function makeRes() {
   return res;
 }
 
+// RAG flow makes 4 fetch calls:
+//   1. embedQuery (embeddings)      — parallel with 2
+//   2. rewriteQuery (chat)          — parallel with 1
+//   3. embedQuery for rewrite text  — only if 2 succeeded
+//   4. final chat completions
+function mockRagSuccess(assistantContent = 'answer') {
+  mockFetch
+    // 1. embedQuery — original query embedding
+    .mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ data: [{ embedding: new Array(1536).fill(0) }] }),
+    })
+    // 2. rewriteQuery — LLM rewrite
+    .mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        choices: [{ message: { content: 'rewritten search terms' } }],
+      }),
+    })
+    // 3. embedQuery — rewrite embedding
+    .mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ data: [{ embedding: new Array(1536).fill(0) }] }),
+    })
+    // 4. final chat completions
+    .mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        choices: [{ message: { role: 'assistant', content: assistantContent } }],
+      }),
+    });
+}
+
 describe('handleChatRequest', () => {
   beforeEach(() => {
     mockFetch.mockReset();
@@ -50,18 +83,7 @@ describe('handleChatRequest', () => {
     // Exhaust the rate limit
     for (let i = 0; i < 20; i++) {
       const r = makeRes();
-      // Mock embeddings call then chat completions call
-      mockFetch
-        .mockResolvedValueOnce({
-          ok: true,
-          json: async () => ({ data: [{ embedding: new Array(1536).fill(0) }] }),
-        })
-        .mockResolvedValueOnce({
-          ok: true,
-          json: async () => ({
-            choices: [{ message: { role: 'assistant', content: 'answer' } }],
-          }),
-        });
+      mockRagSuccess();
       await handleChatRequest(
         makeReq({ body: { messages: [{ role: 'user', content: `q${i}` }] }, ip: '10.0.0.99' }),
         r
@@ -74,18 +96,7 @@ describe('handleChatRequest', () => {
   });
 
   it('calls OpenAI and returns the assistant message on success', async () => {
-    // Mock embeddings call then chat completions call
-    mockFetch
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ data: [{ embedding: new Array(1536).fill(0) }] }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          choices: [{ message: { role: 'assistant', content: 'The penalty is one game.' } }],
-        }),
-      });
+    mockRagSuccess('The penalty is one game.');
 
     const res = makeRes();
     await handleChatRequest(
@@ -97,17 +108,7 @@ describe('handleChatRequest', () => {
   });
 
   it('returns remaining quota in the response', async () => {
-    mockFetch
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ data: [{ embedding: new Array(1536).fill(0) }] }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          choices: [{ message: { role: 'assistant', content: 'answer' } }],
-        }),
-      });
+    mockRagSuccess();
 
     const res = makeRes();
     await handleChatRequest(
@@ -120,10 +121,24 @@ describe('handleChatRequest', () => {
 
   it('returns 502 when OpenAI returns an error', async () => {
     mockFetch
+      // 1. embedQuery
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({ data: [{ embedding: new Array(1536).fill(0) }] }),
       })
+      // 2. rewriteQuery
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          choices: [{ message: { content: 'rewritten terms' } }],
+        }),
+      })
+      // 3. rewrite embedQuery
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: [{ embedding: new Array(1536).fill(0) }] }),
+      })
+      // 4. final chat completions — fails
       .mockResolvedValueOnce({
         ok: false,
         status: 500,
@@ -140,12 +155,25 @@ describe('handleChatRequest', () => {
   });
 
   it('returns 502 when fetch throws a network error', async () => {
-    // Embeddings call succeeds, chat completions call fails
     mockFetch
+      // 1. embedQuery
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({ data: [{ embedding: new Array(1536).fill(0) }] }),
       })
+      // 2. rewriteQuery
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          choices: [{ message: { content: 'rewritten terms' } }],
+        }),
+      })
+      // 3. rewrite embedQuery
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: [{ embedding: new Array(1536).fill(0) }] }),
+      })
+      // 4. final chat completions — network failure
       .mockRejectedValueOnce(new Error('network failure'));
 
     const res = makeRes();
