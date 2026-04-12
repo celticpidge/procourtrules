@@ -50,9 +50,9 @@
       }
     ],
     "must_include": [
-      "service let",
-      "that particular service shall not count",
-      "does not cancel a previous fault"
+      "service let OR serve does not count as a fault",
+      "server serves again",
+      "previous fault is not cancelled OR still on second serve if it was a second serve"
     ],
     "must_not_include": [
       "always two serves again",
@@ -664,6 +664,46 @@
     ],
     "must_not_include": [
       "out because it spun away"
+    ]
+  },
+  {
+    "id": "E039",
+    "gold_status": "exact_bound",
+    "user_query": "If someone is racist to me during a tennis match, what should happen?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "any"
+    },
+    "expected_controlling_source": "ITF Rules of Tennis (2026)",
+    "expected_source_priority": 5,
+    "expected_rule_reference": "Rule 26 (hindrance); USTA officiating guidance (default for flagrant conduct); USTA League Suspension Point System",
+    "expected_citation_string": "ITF Rule 26; Friend at Court officiating guidance; USTA League Regulations",
+    "right_answer": "Racist abuse is not allowed. If it occurs during a point and it hinders the opponent, Rule 26 says the hindered player wins the point for a deliberate hindrance. In officiated USTA play, racial slurs can justify an immediate default as flagrant unsportsmanlike conduct. In league play, the conduct can also be reported through the grievance process and may lead to suspension-point penalties or other discipline.",
+    "evidence": [
+      {
+        "source": "ITF Rules of Tennis (2026)",
+        "quote_or_paraphrase": "If a player is hindered in playing the point by a deliberate act of the opponent(s), the player shall win the point.",
+        "citation": "Rule 26"
+      },
+      {
+        "source": "Friend at Court (USTA Comments & Cases)",
+        "quote_or_paraphrase": "An Official may immediately default a player for a single flagrant unsportsmanlike act, including using racial slurs.",
+        "citation": "USTA officiating guidance"
+      },
+      {
+        "source": "USTA League Regulations (National)",
+        "quote_or_paraphrase": "Any player participating in a USTA League match consents to being penalized for any unsportsmanlike conduct.",
+        "citation": "League Suspension Point System"
+      }
+    ],
+    "must_include": [
+      "deliberate hindrance wins the point",
+      "possible default for flagrant unsportsmanlike conduct",
+      "grievance or reporting process"
+    ],
+    "must_not_include": [
+      "no rule against racism",
+      "just ignore it"
     ]
   }
 ]

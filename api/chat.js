@@ -1,5 +1,5 @@
 import { buildChatPayload, buildRagPayload } from '../src/services/payloadBuilder.js';
-import { retrieveChunks, embedQuery, formatRetrievedChunks } from '../src/services/retrieval.js';
+import { retrieveChunks, retrieveChunksDualEmbed, embedQuery, rewriteQuery, formatRetrievedChunks } from '../src/services/retrieval.js';
 import { createRateLimiter } from '../src/services/rateLimiter.js';
 import { readFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
@@ -38,8 +38,19 @@ async function buildRagRequest(messages) {
     .map((m) => m.content);
   const queryText = userMessages.join(' ');
 
-  const queryEmbedding = await embedQuery(queryText, process.env.OPENAI_API_KEY);
-  const relevantChunks = retrieveChunks(queryEmbedding, embeddings);
+  const apiKey = process.env.OPENAI_API_KEY;
+
+  // Dual-embed: original query + LLM-rewritten search terms
+  const [queryEmbedding, rewrittenText] = await Promise.all([
+    embedQuery(queryText, apiKey),
+    rewriteQuery(queryText, apiKey),
+  ]);
+
+  const rewriteEmbedding = rewrittenText
+    ? await embedQuery(rewrittenText, apiKey)
+    : null;
+
+  const relevantChunks = retrieveChunksDualEmbed(queryEmbedding, rewriteEmbedding, embeddings);
   const context = formatRetrievedChunks(relevantChunks);
 
   return buildRagPayload(messages, context);
