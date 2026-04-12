@@ -49,7 +49,8 @@ RESPONSE STYLE:
 - Use a friendly, conversational tone as if you were a knowledgeable teammate explaining the rules courtside.
 - Use bullet points when listing multiple items.
 - If a rule has important exceptions or edge cases, mention them proactively.
-- When relevant, give a practical example to make the rule easier to understand.`;
+- When relevant, give a practical example to make the rule easier to understand.
+- When presenting multiple facts from the same rule, explain how they relate to each other. Do NOT list sub-rules that contradict or don't apply to the user's specific scenario. For example, if a penalty table leads to a default, don't also mention warm-up benefits that only apply to non-default penalties.`;
 }
 
 function buildSystemPrompt(sources) {
