@@ -84,7 +84,7 @@ export function buildChatPayload(conversation, sources) {
   return {
     model: 'gpt-5.4-nano',
     temperature: 0.4,
-    max_completion_tokens: 1024,
+    max_completion_tokens: 2048,
     messages: [systemMessage, ...conversation],
   };
 }
@@ -103,7 +103,7 @@ ${retrievedContext}`;
   return {
     model: 'gpt-5.4-nano',
     temperature: 0.4,
-    max_completion_tokens: 1024,
+    max_completion_tokens: 2048,
     messages: [{ role: 'system', content: systemPrompt }, ...conversation],
   };
 }
