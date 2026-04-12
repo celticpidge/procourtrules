@@ -19,9 +19,24 @@ const OVERLAP_WORDS = 24; // overlap in words
 const SUB_SECTION_MARKERS = [
   { pattern: /2\.01C\(5\)b \(PNW REG\) - When a player is late/g, prefix: '2.01C(5)b LATENESS PENALTIES - REGULAR LOCAL LEAGUE MATCHES.' },
   { pattern: /Single Weekend Leagues and Local\s+League Playoff/g, prefix: '2.01C(5)b LATENESS PENALTIES - WEEKEND LEAGUES AND LOCAL LEAGUE PLAYOFFS.' },
+  { pattern: /A\.1 LATENESS PENALTIES - BEST OF 3 AND 5 SET MATCHES/g, prefix: 'LATENESS PENALTIES - BEST-OF-THREE AND FIVE SET MATCHES' },
+  { pattern: /A\.2 LATENESS PENALTIES - BEST OF 3 SHORT SET MATCHES/g, prefix: 'LATENESS PENALTIES - SHORT SET AND PRO SET MATCHES' },
+];
+
+// Page headers/footers to strip from PDF-extracted text.
+const PAGE_ARTIFACT_PATTERNS = [
+  /^\d{1,3}$/,                                          // bare page numbers
+  /^\d{4} USTA LEAGUE NATIONAL REGULATIONS Page \d+$/,  // USTA national page headers
+  /^USTA PNW LEAGUE REGULATIONS\s.+$/,                  // PNW page headers
 ];
 
 function preProcessText(text) {
+  // Strip page artifacts
+  text = text.split('\n')
+    .filter(line => !PAGE_ARTIFACT_PATTERNS.some(p => p.test(line.trim())))
+    .join('\n');
+
+  // Inject sub-section markers
   for (const marker of SUB_SECTION_MARKERS) {
     text = text.replace(marker.pattern, `\n${marker.prefix}\n$&`);
   }
@@ -33,6 +48,9 @@ function preProcessText(text) {
  * Returns the heading string if the line is a heading, null otherwise.
  */
 function extractHeading(line) {
+  // Normalize tabs to spaces so the triple-space guard catches tab-separated columns
+  line = line.replace(/\t/g, '    ');
+
   // Regulation-style: "1.02A TITLE...", "1.04 USTA LEAGUE.", "2.01C(5)b LATENESS..."
   const regMatch = line.match(/^(\d+\.\d{2}[A-Z]?(?:\(\d+\))?[a-z]?)\s+([A-Z].+)/);
   if (regMatch) {
