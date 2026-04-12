@@ -52,7 +52,7 @@ RESPONSE STYLE:
 - Use bullet points when listing multiple items.
 - If a rule has important exceptions or edge cases, mention them proactively.
 - When relevant, give a practical example to make the rule easier to understand.
-- When presenting multiple facts from the same rule, explain how they relate to each other. Do NOT list sub-rules that contradict or don't apply to the user's specific scenario. For example, if a penalty table leads to a default, don't also mention warm-up benefits that only apply to non-default penalties.`;
+- CRITICAL: Only include details that are relevant to the user's specific scenario. If the outcome is a default, do NOT mention warm-up benefits, game penalties, or other sub-rules that only apply when the outcome is NOT a default. Think: "Does this detail still matter given the outcome?" If not, omit it.`;
 }
 
 function buildSystemPrompt(sources) {
