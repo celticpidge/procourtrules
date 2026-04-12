@@ -1,7 +1,7 @@
 export default function TypingIndicator() {
   return (
     <div className="message message-assistant">
-      <span className="message-avatar">🎾</span>
+      <img src="/icons/icon-192x192.svg" alt="" className="message-avatar" />
       <div className="typing-indicator">
         <span></span>
         <span></span>
