@@ -283,7 +283,7 @@ body {
 .copy-button {
   padding: 4px 10px;
   background: none;
-  border: 1px solid var(--accent);
+  border: 1px solid var(--border);
   border-radius: 6px;
   color: var(--text-secondary);
   font-size: 0.75rem;
@@ -317,7 +317,7 @@ body {
 
 .feedback-btn {
   background: none;
-  border: 1px solid var(--accent);
+  border: 1px solid var(--border);
   border-radius: 6px;
   padding: 3px 8px;
   font-size: 0.8rem;
