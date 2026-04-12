@@ -1,0 +1,709 @@
+[
+  {
+    "id": "E001",
+    "gold_status": "exact_bound",
+    "user_query": "During a local league game, 2.5 level, an opponent called a foot fault. Is that allowed?",
+    "expected_context": {
+      "officiated": "assume_unofficiated",
+      "competition": "local_league"
+    },
+    "expected_controlling_source": "The Code (Unofficiated Matches)",
+    "expected_source_priority": 3,
+    "expected_rule_reference": "The Code \u00a724, with local context from app hierarchy",
+    "expected_citation_string": "The Code \u00a724",
+    "right_answer": "In an unofficiated local league match, an opponent may call a foot fault only after all reasonable efforts, such as warning the server and attempting to get an official, have failed, and only when the foot fault is so flagrant that it is clearly perceptible from the receiver\u2019s side.",
+    "evidence": [
+      {
+        "source": "The Code (Unofficiated Matches)",
+        "quote_or_paraphrase": "The receiver or the receiver\u2019s partner may call foot faults only after all reasonable efforts, such as warning the server and attempting to get an official to the court, have failed and the foot fault is so flagrant as to be clearly perceptible from the receiver\u2019s side.",
+        "citation": "turn317648view3 L140-L141"
+      }
+    ],
+    "must_include": [
+      "limited circumstances",
+      "warning or reasonable efforts",
+      "clear/flagrant foot fault"
+    ],
+    "must_not_include": [
+      "never allowed",
+      "opponents can freely call any suspected foot fault"
+    ]
+  },
+  {
+    "id": "E003",
+    "gold_status": "exact_bound",
+    "user_query": "Server served before the receiver was ready. Do they get two serves again?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "any"
+    },
+    "expected_controlling_source": "ITF Rules of Tennis (2026)",
+    "expected_source_priority": 5,
+    "expected_rule_reference": "Rule 23",
+    "expected_citation_string": "ITF Rule 23",
+    "right_answer": "If the serve is delivered when the receiver is not ready, that is a service let. That particular service does not count, the server serves again, and a service let does not cancel a previous fault. So if this happened on a second serve, the server serves the second serve again, not automatically a first serve.",
+    "evidence": [
+      {
+        "source": "ITF Rules of Tennis (2026)",
+        "quote_or_paraphrase": "A service let occurs when the ball is served when the receiver is not ready. In the case of a service let, that particular service shall not count, and the server shall serve again, but a service let does not cancel a previous fault.",
+        "citation": "turn317648view2 L348-L350"
+      }
+    ],
+    "must_include": [
+      "service let OR serve does not count as a fault",
+      "server serves again",
+      "previous fault is not cancelled OR still on second serve if it was a second serve"
+    ],
+    "must_not_include": [
+      "always two serves again",
+      "automatic first serve reset"
+    ]
+  },
+  {
+    "id": "E004",
+    "gold_status": "exact_bound",
+    "user_query": "If the ball hits a player before bouncing, who wins the point?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "any"
+    },
+    "expected_controlling_source": "ITF Rules of Tennis (2026)",
+    "expected_source_priority": 5,
+    "expected_rule_reference": "Rule 24(i)",
+    "expected_citation_string": "ITF Rule 24(i)",
+    "right_answer": "The player who is hit loses the point, because a player loses the point if the ball in play touches the player or anything the player is wearing or carrying, except the racket.",
+    "evidence": [
+      {
+        "source": "ITF Rules of Tennis (2026)",
+        "quote_or_paraphrase": "The point is lost if the ball in play touches the player or anything that the player is wearing or carrying, except the racket.",
+        "citation": "turn317648view2 L376-L377"
+      }
+    ],
+    "must_include": [
+      "player hit by ball loses point"
+    ],
+    "must_not_include": [
+      "replay the point",
+      "depends on intent"
+    ]
+  },
+  {
+    "id": "E007",
+    "gold_status": "exact_bound",
+    "user_query": "A player is 12 minutes late to a regular local league match in PNW. What penalty applies?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "regular_local_league"
+    },
+    "expected_controlling_source": "PNW League Regulations",
+    "expected_source_priority": 1,
+    "expected_rule_reference": "2.01C(5)b (PNW REG)",
+    "expected_citation_string": "PNW League Regulations 2.01C(5)b",
+    "right_answer": "For a regular local league match in PNW, a player who is 12 minutes late is defaulted. The PNW lateness table says 10:01 or more minutes late is a default.",
+    "evidence": [
+      {
+        "source": "PNW League Regulations",
+        "quote_or_paraphrase": "When a player is late... the lateness penalty is as follows: 5 minutes or less late: loss of service toss plus one game; 5:01\u201310 minutes late: loss of service toss plus 2 games; 10:01 or more minutes late: Default.",
+        "citation": "turn281689view0 L216-L225"
+      }
+    ],
+    "must_include": [
+      "default",
+      "10:01 or more minutes late"
+    ],
+    "must_not_include": [
+      "loss of 3 games",
+      "playoff/weekend table"
+    ]
+  },
+  {
+    "id": "E008",
+    "gold_status": "exact_bound",
+    "user_query": "A player is 12 minutes late to a local league playoff match in PNW. What penalty applies?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "local_league_playoff"
+    },
+    "expected_controlling_source": "PNW League Regulations",
+    "expected_source_priority": 1,
+    "expected_rule_reference": "2.01C(5)b (PNW REG), playoff/weekend subsection",
+    "expected_citation_string": "PNW League Regulations 2.01C(5)b",
+    "right_answer": "For a PNW local league playoff match, a player who is 12 minutes late loses the service toss plus 3 games. The playoff/weekend lateness table uses 10:01\u201315 minutes late as loss of service toss plus 3 games, with default only at 15 or more minutes late.",
+    "evidence": [
+      {
+        "source": "PNW League Regulations",
+        "quote_or_paraphrase": "Single Weekend Leagues and Local League Playoff matches will be as follows... 5 minutes or less late: loss of service toss plus one game; 5:01\u201310 minutes late: loss of service toss plus 2 games; 10:01\u201315 minutes late: loss of service toss plus 3 games; 15 or more minutes late: Default.",
+        "citation": "turn281689view1 L226-L234"
+      }
+    ],
+    "must_include": [
+      "loss of service toss plus 3 games",
+      "10:01\u201315 minutes late"
+    ],
+    "must_not_include": [
+      "default at 12 minutes",
+      "regular local league table"
+    ]
+  },
+  {
+    "id": "E009",
+    "gold_status": "exact_bound",
+    "user_query": "A player was late to the match. What happens?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "ambiguous"
+    },
+    "expected_controlling_source": "PNW League Regulations",
+    "expected_source_priority": 1,
+    "expected_rule_reference": "2.01C(5)b (PNW REG)",
+    "expected_citation_string": "PNW League Regulations 2.01C(5)b",
+    "right_answer": "It depends on the match context in PNW. For a regular local league match, 10:01 or more minutes late is a default. For single weekend leagues and local league playoff matches, 10:01\u201315 minutes late is loss of service toss plus 3 games and default starts at 15 or more minutes late. The answer should present those contexts separately rather than blending them.",
+    "evidence": [
+      {
+        "source": "PNW League Regulations",
+        "quote_or_paraphrase": "Regular local league lateness: 10:01 or more minutes late: Default.",
+        "citation": "turn281689view0 L221-L225"
+      },
+      {
+        "source": "PNW League Regulations",
+        "quote_or_paraphrase": "Single Weekend Leagues and Local League Playoff matches... 10:01\u201315 minutes late: loss of service toss plus 3 games; 15 or more minutes late: Default.",
+        "citation": "turn281689view1 L226-L234"
+      }
+    ],
+    "must_include": [
+      "regular local league vs playoff/weekend split",
+      "separate outcomes"
+    ],
+    "must_not_include": [
+      "single blended answer"
+    ]
+  },
+  {
+    "id": "E011",
+    "gold_status": "exact_bound",
+    "user_query": "In a match with a chair umpire, can players still resolve line calls using The Code?",
+    "expected_context": {
+      "officiated": "officiated",
+      "competition": "any"
+    },
+    "expected_controlling_source": "Friend at Court (USTA Comments & Cases)",
+    "expected_source_priority": 4,
+    "expected_rule_reference": "Role of Court Officials, Appendix VII",
+    "expected_citation_string": "Friend at Court, Role of Court Officials, Appendix VII",
+    "right_answer": "No. In a match with a chair umpire, the chair umpire is the final authority on questions of fact during the match. Players may call the referee only if they disagree with the chair umpire\u2019s interpretation of tennis law, so players do not resolve those calls under The Code as if the match were unofficiated.",
+    "evidence": [
+      {
+        "source": "Friend at Court (USTA Comments & Cases)",
+        "quote_or_paraphrase": "In matches where a chair umpire is assigned, the chair umpire is the final authority on all questions of fact during the match. The players have the right to call the referee to court if they disagree with a chair umpire\u2019s interpretation of tennis law.",
+        "citation": "turn396095view4 L1377-L1380"
+      }
+    ],
+    "must_include": [
+      "chair umpire is final authority on questions of fact"
+    ],
+    "must_not_include": [
+      "players still resolve line calls under The Code the same way"
+    ]
+  },
+  {
+    "id": "E012",
+    "gold_status": "exact_bound",
+    "user_query": "If a player creates a hindrance but there is a roving official, who decides the outcome?",
+    "expected_context": {
+      "officiated": "officiated",
+      "competition": "any"
+    },
+    "expected_controlling_source": "Friend at Court (USTA Comments & Cases)",
+    "expected_source_priority": 4,
+    "expected_rule_reference": "Role of Court Officials, Appendix VII",
+    "expected_citation_string": "Friend at Court, Role of Court Officials, Appendix VII",
+    "right_answer": "If an official is present and acting in that match, the official decides the outcome on questions of fact within the official\u2019s authority. In officiated play, the match is not governed as if players are self-officiating under The Code.",
+    "evidence": [
+      {
+        "source": "Friend at Court (USTA Comments & Cases)",
+        "quote_or_paraphrase": "In matches where a chair umpire is assigned, the chair umpire is the final authority on all questions of fact during the match.",
+        "citation": "turn396095view4 L1377-L1378"
+      }
+    ],
+    "must_include": [
+      "official decides",
+      "questions of fact"
+    ],
+    "must_not_include": [
+      "players decide for themselves"
+    ]
+  },
+  {
+    "id": "E019",
+    "gold_status": "exact_bound",
+    "user_query": "What rule says I have to call balls on my side only?",
+    "expected_context": {
+      "officiated": "assume_unofficiated",
+      "competition": "local_league_if_unspecified"
+    },
+    "expected_controlling_source": "The Code (Unofficiated Matches)",
+    "expected_source_priority": 3,
+    "expected_rule_reference": "The Code \u00a75",
+    "expected_citation_string": "The Code \u00a75",
+    "right_answer": "The Code says a player calls all shots landing on, or aimed at, the player\u2019s side of the net.",
+    "evidence": [
+      {
+        "source": "The Code (Unofficiated Matches)",
+        "quote_or_paraphrase": "Player makes calls on own side of net. A player calls all shots landing on, or aimed at, the player's side of the net.",
+        "citation": "turn396095view1 L49-L51"
+      }
+    ],
+    "must_include": [
+      "player makes calls on own side of net"
+    ],
+    "must_not_include": [
+      "uncited vague explanation"
+    ]
+  },
+  {
+    "id": "E021",
+    "gold_status": "exact_bound",
+    "user_query": "I served and the returner missed it, then said they weren\u2019t ready. They didn\u2019t say anything before I served. Do they get the point replayed?",
+    "expected_context": {
+      "officiated": "assume_unofficiated_if_unspecified",
+      "competition": "local_league_if_unspecified"
+    },
+    "expected_controlling_source": "The Code (Unofficiated Matches)",
+    "expected_source_priority": 3,
+    "expected_rule_reference": "The Code \u00a729",
+    "expected_citation_string": "The Code \u00a729",
+    "right_answer": "Not automatically. Under The Code, if a player attempts to return a serve, even a quick serve, the receiver is presumed to be ready. So if the returner tried to play the serve and only objected after missing it, the default answer is that they do not get the point replayed on a bare claim of not being ready.",
+    "evidence": [
+      {
+        "source": "The Code (Unofficiated Matches)",
+        "quote_or_paraphrase": "If a player attempts to return a serve (even if it is a 'quick' serve), then the receiver is presumed to be ready.",
+        "citation": "turn317648view3 L158-L161"
+      }
+    ],
+    "must_include": [
+      "attempt to return means presumed ready",
+      "not automatic replay"
+    ],
+    "must_not_include": [
+      "receiver always gets replayed point afterward"
+    ]
+  },
+  {
+    "id": "E023",
+    "gold_status": "exact_bound",
+    "user_query": "I accidentally hit the ball twice in one swing. Opponent says it\u2019s illegal. Is it?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "any"
+    },
+    "expected_controlling_source": "ITF Rules of Tennis (2026)",
+    "expected_source_priority": 5,
+    "expected_rule_reference": "Rule 24(f) and Rule 26 Case 1",
+    "expected_citation_string": "ITF Rules 24(f), 26 Case 1",
+    "right_answer": "An unintentional double hit is not treated as hindrance, and Rule 24(f) only makes a player lose the point for deliberately touching the ball with the racket more than once. So an accidental double contact in one swing is not automatically illegal on that basis.",
+    "evidence": [
+      {
+        "source": "ITF Rules of Tennis (2026)",
+        "quote_or_paraphrase": "The point is lost if the player deliberately touches the ball with the racket more than once.",
+        "citation": "turn317648view2 L369-L370"
+      },
+      {
+        "source": "ITF Rules of Tennis (2026)",
+        "quote_or_paraphrase": "Case 1: Is an unintentional double hit a hindrance? Decision: No. See also Rule 24(f).",
+        "citation": "turn165442view4 L447-L448"
+      }
+    ],
+    "must_include": [
+      "deliberately",
+      "unintentional double hit is not hindrance"
+    ],
+    "must_not_include": [
+      "any double contact loses the point"
+    ]
+  },
+  {
+    "id": "E025",
+    "gold_status": "exact_bound",
+    "user_query": "My captain says opponents are never allowed to call foot faults. Is that true?",
+    "expected_context": {
+      "officiated": "assume_unofficiated",
+      "competition": "local_league_if_unspecified"
+    },
+    "expected_controlling_source": "The Code (Unofficiated Matches)",
+    "expected_source_priority": 3,
+    "expected_rule_reference": "The Code \u00a724",
+    "expected_citation_string": "The Code \u00a724",
+    "right_answer": "No. That is too absolute. In an unofficiated match, the receiver or the receiver\u2019s partner may call foot faults, but only after all reasonable efforts such as warning the server and attempting to get an official have failed, and only when the foot fault is flagrant and clearly perceptible from the receiver\u2019s side.",
+    "evidence": [
+      {
+        "source": "The Code (Unofficiated Matches)",
+        "quote_or_paraphrase": "The receiver or the receiver's partner may call foot faults only after all reasonable efforts... have failed and the foot fault is so flagrant as to be clearly perceptible from the receiver's side.",
+        "citation": "turn317648view3 L140-L141"
+      }
+    ],
+    "must_include": [
+      "not never",
+      "limited circumstances"
+    ],
+    "must_not_include": [
+      "never allowed",
+      "freely allowed any time"
+    ]
+  },
+  {
+    "id": "E026",
+    "gold_status": "exact_bound",
+    "user_query": "Any time a point is replayed, you always get two serves again, right?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "any"
+    },
+    "expected_controlling_source": "ITF Rules of Tennis (2026)",
+    "expected_source_priority": 5,
+    "expected_rule_reference": "Rule 23; supplemental The Code \u00a730",
+    "expected_citation_string": "ITF Rule 23; The Code \u00a730",
+    "right_answer": "No. Under ITF Rule 23, when a let is called the whole point is replayed except when a service let is called on a second service. The Code also says that when there is a delay between first and second serves, the server gets one serve if the server caused the delay and two serves if the receiver caused it or there was outside interference.",
+    "evidence": [
+      {
+        "source": "ITF Rules of Tennis (2026)",
+        "quote_or_paraphrase": "In all cases when a let is called, except when a service let is called on a second service, the whole point shall be replayed.",
+        "citation": "turn317648view2 L352-L354"
+      },
+      {
+        "source": "The Code (Unofficiated Matches)",
+        "quote_or_paraphrase": "When there is a delay between the first and second serves: the server gets one serve if the server was the cause of the delay; the server gets two serves if the delay was caused by the receiver or if there was outside interference.",
+        "citation": "turn317648view3 L165-L168"
+      }
+    ],
+    "must_include": [
+      "not always",
+      "second-service exception or delay logic"
+    ],
+    "must_not_include": [
+      "all replays reset to first serve"
+    ]
+  },
+  {
+    "id": "E027",
+    "gold_status": "exact_bound",
+    "user_query": "My opponent is making terrible line calls and won\u2019t change them. What am I allowed to do?",
+    "expected_context": {
+      "officiated": "assume_unofficiated",
+      "competition": "local_league_if_unspecified"
+    },
+    "expected_controlling_source": "The Code (Unofficiated Matches)",
+    "expected_source_priority": 3,
+    "expected_rule_reference": "The Code \u00a7\u00a75-8",
+    "expected_citation_string": "The Code \u00a7\u00a75-8",
+    "right_answer": "You are not allowed to start making calls on your opponent\u2019s side. The Code says each player calls shots landing on that player's side, opponents get the benefit of the doubt, and any ball that cannot be called out is good.",
+    "evidence": [
+      {
+        "source": "The Code (Unofficiated Matches)",
+        "quote_or_paraphrase": "A player calls all shots landing on, or aimed at, the player's side of the net.",
+        "citation": "turn396095view1 L49-L51"
+      },
+      {
+        "source": "The Code (Unofficiated Matches)",
+        "quote_or_paraphrase": "Any doubt must be resolved in favor of an opponent.",
+        "citation": "turn396095view1 L52-L59"
+      },
+      {
+        "source": "The Code (Unofficiated Matches)",
+        "quote_or_paraphrase": "Any ball that cannot be called out is considered to be good.",
+        "citation": "turn396095view1 L63-L69"
+      }
+    ],
+    "must_include": [
+      "cannot call opponent's side",
+      "benefit of doubt",
+      "ball not clearly out is good"
+    ],
+    "must_not_include": [
+      "retaliate with your own line calls"
+    ]
+  },
+  {
+    "id": "E028",
+    "gold_status": "exact_bound",
+    "user_query": "I think my opponent is cheating on line calls. Can I start calling their shots on my side?",
+    "expected_context": {
+      "officiated": "assume_unofficiated",
+      "competition": "local_league_if_unspecified"
+    },
+    "expected_controlling_source": "The Code (Unofficiated Matches)",
+    "expected_source_priority": 3,
+    "expected_rule_reference": "The Code \u00a7\u00a75-8",
+    "expected_citation_string": "The Code \u00a7\u00a75-8",
+    "right_answer": "No. The Code requires a player to make calls only on that player's own side, gives the opponent the benefit of the doubt, and treats any ball that cannot be called out as good.",
+    "evidence": [
+      {
+        "source": "The Code (Unofficiated Matches)",
+        "quote_or_paraphrase": "A player calls all shots landing on, or aimed at, the player's side of the net.",
+        "citation": "turn396095view1 L49-L51"
+      },
+      {
+        "source": "The Code (Unofficiated Matches)",
+        "quote_or_paraphrase": "Any ball that cannot be called out is considered to be good.",
+        "citation": "turn396095view1 L63-L69"
+      }
+    ],
+    "must_include": [
+      "clear no",
+      "own side only"
+    ],
+    "must_not_include": [
+      "yes if you are sure"
+    ]
+  },
+  {
+    "id": "E029",
+    "gold_status": "exact_bound",
+    "user_query": "We\u2019re in a dispute and can\u2019t agree on what happened. Who decides in a normal league match?",
+    "expected_context": {
+      "officiated": "assume_unofficiated",
+      "competition": "local_league"
+    },
+    "expected_controlling_source": "The Code (Unofficiated Matches)",
+    "expected_source_priority": 3,
+    "expected_rule_reference": "The Code \u00a7\u00a75-8; Friend at Court Appendix VII for officiated contrast",
+    "expected_citation_string": "The Code \u00a7\u00a75-8; Friend at Court Appendix VII",
+    "right_answer": "In a normal unofficiated league match, the players make the calls on their own side and apply the unofficiated principles in The Code. If there is a chair umpire, the chair umpire becomes the final authority on questions of fact.",
+    "evidence": [
+      {
+        "source": "The Code (Unofficiated Matches)",
+        "quote_or_paraphrase": "A player calls all shots landing on, or aimed at, the player's side of the net.",
+        "citation": "turn396095view1 L49-L51"
+      },
+      {
+        "source": "Friend at Court (USTA Comments & Cases)",
+        "quote_or_paraphrase": "In matches where a chair umpire is assigned, the chair umpire is the final authority on all questions of fact during the match.",
+        "citation": "turn396095view4 L1377-L1378"
+      }
+    ],
+    "must_include": [
+      "unofficiated players decide their own side",
+      "chair umpire contrast if officiated play is mentioned"
+    ],
+    "must_not_include": [
+      "captain automatically decides live point"
+    ]
+  },
+  {
+    "id": "E030",
+    "gold_status": "exact_bound",
+    "user_query": "Opponent shouted after I hit the ball but before it landed. Does that count as hindrance?",
+    "expected_context": {
+      "officiated": "assume_unofficiated_if_unspecified",
+      "competition": "any"
+    },
+    "expected_controlling_source": "ITF Rules of Tennis (2026)",
+    "expected_source_priority": 5,
+    "expected_rule_reference": "Rule 26",
+    "expected_citation_string": "ITF Rule 26",
+    "right_answer": "Potentially yes. Under Rule 26, if a player is hindered by a deliberate act of the opponent, the hindered player wins the point. If the hindrance is caused by an unintentional act of the opponent, the point is replayed.",
+    "evidence": [
+      {
+        "source": "ITF Rules of Tennis (2026)",
+        "quote_or_paraphrase": "If a player is hindered in playing the point by a deliberate act of the opponent(s), the player shall win the point. However, the point shall be replayed if a player is hindered by either an unintentional act of the opponent(s), or something outside the player's own control.",
+        "citation": "turn165442view2 L441-L446"
+      }
+    ],
+    "must_include": [
+      "deliberate vs unintentional distinction"
+    ],
+    "must_not_include": [
+      "all talking is automatic loss of point",
+      "talking is never hindrance"
+    ]
+  },
+  {
+    "id": "E031",
+    "gold_status": "exact_bound",
+    "user_query": "There was a hindrance during my second serve. Do I get a first or second serve?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "any"
+    },
+    "expected_controlling_source": "ITF Rules of Tennis (2026)",
+    "expected_source_priority": 5,
+    "expected_rule_reference": "Rule 23 and Rule 26; supplemental The Code \u00a730",
+    "expected_citation_string": "ITF Rules 23, 26; The Code \u00a730",
+    "right_answer": "It depends on the type of interruption. If it is a service let because the receiver was not ready, that particular service does not count and a previous fault is not canceled, so a second serve stays a second serve. If the point is replayed because of unintentional hindrance or outside interference after play has started, Rule 23 says the whole point is replayed except for a service let on second serve, and The Code says outside interference between first and second serves gives the server two serves.",
+    "evidence": [
+      {
+        "source": "ITF Rules of Tennis (2026)",
+        "quote_or_paraphrase": "In all cases when a let is called, except when a service let is called on a second service, the whole point shall be replayed.",
+        "citation": "turn317648view2 L352-L354"
+      },
+      {
+        "source": "ITF Rules of Tennis (2026)",
+        "quote_or_paraphrase": "If a player is hindered by an unintentional act of the opponent(s), the point shall be replayed.",
+        "citation": "turn165442view2 L442-L446"
+      },
+      {
+        "source": "The Code (Unofficiated Matches)",
+        "quote_or_paraphrase": "When the server\u2019s second service motion is interrupted by a ball coming onto the court, the server is entitled to two serves.",
+        "citation": "turn317648view3 L163-L165"
+      }
+    ],
+    "must_include": [
+      "it depends",
+      "service let on second serve exception or outside-interference distinction"
+    ],
+    "must_not_include": [
+      "always first serve again",
+      "always second serve again"
+    ]
+  },
+  {
+    "id": "E035",
+    "gold_status": "exact_bound",
+    "user_query": "USTA rules say X, but our local league does Y. Which one actually applies?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "PNW_local_league"
+    },
+    "expected_controlling_source": "PNW League Regulations",
+    "expected_source_priority": 1,
+    "expected_rule_reference": "App hierarchy + PNW League Regulations as highest-priority local source",
+    "expected_citation_string": "App hierarchy; PNW League Regulations",
+    "right_answer": "In a PNW local league match, the local PNW League Regulations control when they directly address the issue. Your app\u2019s hierarchy puts PNW League Regulations above national USTA League Regulations, The Code, Friend at Court, and the ITF Rules.",
+    "evidence": [
+      {
+        "source": "PNW League Regulations",
+        "quote_or_paraphrase": "PNW League Regulations are the highest-priority source, followed by USTA League Regulations (National), The Code, Friend at Court, and ITF Rules of Tennis.",
+        "citation": "turn2file10"
+      }
+    ],
+    "must_include": [
+      "PNW local rule controls",
+      "hierarchy explanation"
+    ],
+    "must_not_include": [
+      "national always wins"
+    ]
+  },
+  {
+    "id": "E036",
+    "gold_status": "exact_bound",
+    "user_query": "Friend at Court says one thing but The Code says something else. Which one should I follow?",
+    "expected_context": {
+      "officiated": "assume_unofficiated_if_unspecified",
+      "competition": "depends_on_issue"
+    },
+    "expected_controlling_source": "The Code (Unofficiated Matches)",
+    "expected_source_priority": 3,
+    "expected_rule_reference": "App hierarchy",
+    "expected_citation_string": "App hierarchy",
+    "right_answer": "Under your app\u2019s hierarchy, The Code outranks Friend at Court for unofficiated-match questions unless a higher-priority local or national league rule directly controls the issue.",
+    "evidence": [
+      {
+        "source": "PNW League Regulations",
+        "quote_or_paraphrase": "The Code is priority 3 and Friend at Court is priority 4.",
+        "citation": "turn2file10"
+      }
+    ],
+    "must_include": [
+      "The Code outranks Friend at Court"
+    ],
+    "must_not_include": [
+      "Friend at Court automatically controls"
+    ]
+  },
+  {
+    "id": "E037",
+    "gold_status": "exact_bound",
+    "user_query": "Isn\u2019t there a rule that says you lose a point if your hat falls off?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "any"
+    },
+    "expected_controlling_source": "No_direct_rule_if_absent_from_corpus",
+    "expected_source_priority": null,
+    "expected_rule_reference": "No such rule identified in sourced materials used here",
+    "expected_citation_string": "No direct rule found",
+    "right_answer": "A correct answer should not invent such a rule. Based on the sourced materials used here, there is no identified rule saying a player automatically loses the point merely because a hat falls off.",
+    "evidence": [
+      {
+        "source": "Sourced rules set used for this gold subset",
+        "quote_or_paraphrase": "No direct rule identified for automatic point loss solely because a hat falls off.",
+        "citation": "derived from reviewed sources"
+      }
+    ],
+    "must_include": [
+      "do not invent rules",
+      "no direct rule found"
+    ],
+    "must_not_include": [
+      "made-up automatic penalty",
+      "fake citation"
+    ]
+  },
+  {
+    "id": "E038",
+    "gold_status": "exact_bound",
+    "user_query": "If the ball hits the line but spins out, it\u2019s out, right?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "any"
+    },
+    "expected_controlling_source": "ITF Rules of Tennis (2026)",
+    "expected_source_priority": 5,
+    "expected_rule_reference": "Rule 12",
+    "expected_citation_string": "ITF Rule 12",
+    "right_answer": "No. If a ball touches a line, it is regarded as touching the court bounded by that line. What it does after the bounce does not change that.",
+    "evidence": [
+      {
+        "source": "ITF Rules of Tennis (2026)",
+        "quote_or_paraphrase": "If a ball touches a line, it is regarded as touching the court bounded by that line.",
+        "citation": "turn165442view3 L263-L265"
+      }
+    ],
+    "must_include": [
+      "touching the line is good"
+    ],
+    "must_not_include": [
+      "out because it spun away"
+    ]
+  },
+  {
+    "id": "E039",
+    "gold_status": "exact_bound",
+    "user_query": "If someone is racist to me during a tennis match, what should happen?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "any"
+    },
+    "expected_controlling_source": "ITF Rules of Tennis (2026)",
+    "expected_source_priority": 5,
+    "expected_rule_reference": "Rule 26 (hindrance); USTA officiating guidance (default for flagrant conduct); USTA League Suspension Point System",
+    "expected_citation_string": "ITF Rule 26; Friend at Court officiating guidance; USTA League Regulations",
+    "right_answer": "Racist abuse is not allowed. If it occurs during a point and it hinders the opponent, Rule 26 says the hindered player wins the point for a deliberate hindrance. In officiated USTA play, racial slurs can justify an immediate default as flagrant unsportsmanlike conduct. In league play, the conduct can also be reported through the grievance process and may lead to suspension-point penalties or other discipline.",
+    "evidence": [
+      {
+        "source": "ITF Rules of Tennis (2026)",
+        "quote_or_paraphrase": "If a player is hindered in playing the point by a deliberate act of the opponent(s), the player shall win the point.",
+        "citation": "Rule 26"
+      },
+      {
+        "source": "Friend at Court (USTA Comments & Cases)",
+        "quote_or_paraphrase": "An Official may immediately default a player for a single flagrant unsportsmanlike act, including using racial slurs.",
+        "citation": "USTA officiating guidance"
+      },
+      {
+        "source": "USTA League Regulations (National)",
+        "quote_or_paraphrase": "Any player participating in a USTA League match consents to being penalized for any unsportsmanlike conduct.",
+        "citation": "League Suspension Point System"
+      }
+    ],
+    "must_include": [
+      "deliberate hindrance wins the point",
+      "possible default for flagrant unsportsmanlike conduct",
+      "grievance or reporting process"
+    ],
+    "must_not_include": [
+      "no rule against racism",
+      "just ignore it"
+    ]
+  }
+]

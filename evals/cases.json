@@ -1,0 +1,25 @@
+[
+  {
+    "id": "E021",
+    "category": "common_misconceptions",
+    "difficulty": "medium",
+    "user_query": "I served and the returner missed it, then said they weren't ready. They didn't say anything before I served. Do they get the point replayed?",
+    "expected_context": {
+      "officiated": "assume_unofficiated",
+      "competition": "local_league_if_unspecified"
+    },
+    "expected_controlling_source": "ITF Rules of Tennis (2026)",
+    "expected_source_priority": 5,
+    "right_answer": "Not automatically. If the receiver was not ready and the server should reasonably have seen that, the serve should not count. But if the receiver appeared ready and only objected after missing the serve, they do not automatically get a replay. The answer should focus on whether the receiver was actually ready and whether that was apparent before the serve.",
+    "must_include": [
+      "clear ruling",
+      "readiness matters",
+      "not every late objection earns a replay"
+    ],
+    "must_not_include": [
+      "automatic replay in all cases",
+      "unsupported claim that silence always waives the issue"
+    ],
+    "notes": "Replace with exact language from your source set on receiver readiness and replay outcome."
+  }
+]
