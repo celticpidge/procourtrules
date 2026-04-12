@@ -50,12 +50,18 @@ describe('handleChatRequest', () => {
     // Exhaust the rate limit
     for (let i = 0; i < 20; i++) {
       const r = makeRes();
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          choices: [{ message: { role: 'assistant', content: 'answer' } }],
-        }),
-      });
+      // Mock embeddings call then chat completions call
+      mockFetch
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ data: [{ embedding: new Array(1536).fill(0) }] }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            choices: [{ message: { role: 'assistant', content: 'answer' } }],
+          }),
+        });
       await handleChatRequest(
         makeReq({ body: { messages: [{ role: 'user', content: `q${i}` }] }, ip: '10.0.0.99' }),
         r
@@ -68,12 +74,18 @@ describe('handleChatRequest', () => {
   });
 
   it('calls OpenAI and returns the assistant message on success', async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        choices: [{ message: { role: 'assistant', content: 'The penalty is one game.' } }],
-      }),
-    });
+    // Mock embeddings call then chat completions call
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: [{ embedding: new Array(1536).fill(0) }] }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          choices: [{ message: { role: 'assistant', content: 'The penalty is one game.' } }],
+        }),
+      });
 
     const res = makeRes();
     await handleChatRequest(
@@ -85,12 +97,17 @@ describe('handleChatRequest', () => {
   });
 
   it('returns remaining quota in the response', async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        choices: [{ message: { role: 'assistant', content: 'answer' } }],
-      }),
-    });
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: [{ embedding: new Array(1536).fill(0) }] }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          choices: [{ message: { role: 'assistant', content: 'answer' } }],
+        }),
+      });
 
     const res = makeRes();
     await handleChatRequest(
@@ -102,11 +119,17 @@ describe('handleChatRequest', () => {
   });
 
   it('returns 502 when OpenAI returns an error', async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      status: 500,
-      json: async () => ({ error: { message: 'Internal server error' } }),
-    });
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: [{ embedding: new Array(1536).fill(0) }] }),
+      })
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        text: async () => 'Internal server error',
+        json: async () => ({ error: { message: 'Internal server error' } }),
+      });
 
     const res = makeRes();
     await handleChatRequest(
@@ -117,7 +140,13 @@ describe('handleChatRequest', () => {
   });
 
   it('returns 502 when fetch throws a network error', async () => {
-    mockFetch.mockRejectedValueOnce(new Error('network failure'));
+    // Embeddings call succeeds, chat completions call fails
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: [{ embedding: new Array(1536).fill(0) }] }),
+      })
+      .mockRejectedValueOnce(new Error('network failure'));
 
     const res = makeRes();
     await handleChatRequest(

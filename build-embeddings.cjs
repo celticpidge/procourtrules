@@ -14,22 +14,93 @@ const sourceFiles = [
 const CHUNK_SIZE = 500; // target tokens (~4 chars per token)
 const CHUNK_OVERLAP = 50; // overlap in tokens
 
+/**
+ * Detect section headings in source text lines.
+ * Returns the heading string if the line is a heading, null otherwise.
+ */
+function extractHeading(line) {
+  // Regulation-style: "1.02A TITLE..." or "1.04 USTA LEAGUE."
+  const regMatch = line.match(/^(\d+\.\d{2}[A-Z]?(?:\(\d+\))?)\s+([A-Z].+)/);
+  if (regMatch) {
+    const num = regMatch[1];
+    let title = regMatch[2];
+    // Truncate at first period followed by space (end of heading title)
+    const periodIdx = title.search(/\.\s/);
+    if (periodIdx > 0) title = title.substring(0, periodIdx);
+    if (title.length > 80) title = title.substring(0, 80);
+    return `${num} ${title}`;
+  }
+
+  // ITF Rule style: "Rule 1 THE COURT 2" (strip trailing page number)
+  const ruleMatch = line.match(/^(Rule \d+\s+[A-Z][A-Z\s]+)/i);
+  if (ruleMatch) {
+    return ruleMatch[1].replace(/\s+\d+\s*$/, '').trim();
+  }
+
+  // USTA Comment style: "USTA Comment 1.1: ..."
+  const commentMatch = line.match(/^(USTA Comment \d+\.\d+):/);
+  if (commentMatch) {
+    return commentMatch[1];
+  }
+
+  // Numbered rule heading: "2. PERMANENT FIXTURES"
+  if (/^\d+\.\s+[A-Z][A-Z\s&]+$/.test(line) && !/\s{3,}/.test(line)) {
+    return line;
+  }
+
+  // ALL CAPS standalone section headers (e.g. "MAKING CALLS", "WARM-UP")
+  // Require 2+ words of 2+ chars to avoid table column headers
+  if (
+    /^[A-Z][A-Z\s&,\-]{3,}$/.test(line) &&
+    line.length >= 4 &&
+    line.length <= 60 &&
+    !/\s{3,}/.test(line) &&
+    line.split(/\s+/).filter((w) => w.length >= 2).length >= 2
+  ) {
+    return line;
+  }
+
+  return null;
+}
+
 function chunkText(text, sourceName, sourceId, priority) {
-  const words = text.split(/\s+/);
+  const lines = text.split('\n');
+
+  // Build word array annotated with current section heading
+  let currentHeading = null;
+  const annotatedWords = [];
+
+  for (const line of lines) {
+    const heading = extractHeading(line.trim());
+    if (heading) {
+      currentHeading = heading;
+    }
+    const lineWords = line.split(/\s+/).filter((w) => w);
+    for (const word of lineWords) {
+      annotatedWords.push({ word, heading: currentHeading });
+    }
+  }
+
   const chunkWordCount = CHUNK_SIZE * 4 / 5; // rough words-per-chunk (~400 words ≈ 500 tokens)
   const overlapWords = CHUNK_OVERLAP * 4 / 5;
   const chunks = [];
 
-  for (let i = 0; i < words.length; i += chunkWordCount - overlapWords) {
-    const chunkWords = words.slice(i, i + chunkWordCount);
-    if (chunkWords.length < 20) break; // skip tiny trailing chunks
+  for (let i = 0; i < annotatedWords.length; i += chunkWordCount - overlapWords) {
+    const slice = annotatedWords.slice(i, i + chunkWordCount);
+    if (slice.length < 20) break; // skip tiny trailing chunks
+
+    const sectionHeading = slice[0].heading;
+    const chunkBody = slice.map((w) => w.word).join(' ');
+    const enrichedText = sectionHeading
+      ? `[Section: ${sectionHeading}]\n${chunkBody}`
+      : chunkBody;
 
     chunks.push({
       id: `${sourceId}-${chunks.length}`,
       source: sourceName,
       sourceId,
       priority,
-      text: chunkWords.join(' '),
+      text: enrichedText,
     });
   }
 
