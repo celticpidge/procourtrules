@@ -1,6 +1,7 @@
-import { buildChatPayload } from '../src/services/payloadBuilder.js';
+import { buildChatPayload, buildRagPayload } from '../src/services/payloadBuilder.js';
+import { retrieveChunks, embedQuery, formatRetrievedChunks } from '../src/services/retrieval.js';
 import { createRateLimiter } from '../src/services/rateLimiter.js';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -19,10 +20,25 @@ const sources = sourceFiles.map((file) =>
   JSON.parse(readFileSync(join(dataDir, file), 'utf-8'))
 );
 
+const embeddingsPath = join(dataDir, 'embeddings.json');
+const useRag = existsSync(embeddingsPath);
+const embeddings = useRag ? JSON.parse(readFileSync(embeddingsPath, 'utf-8')) : null;
+
 const limiter = createRateLimiter({
   maxRequests: 20,
   windowMs: 24 * 60 * 60 * 1000,
 });
+
+async function buildRagRequest(messages) {
+  const lastUserMessage = [...messages].reverse().find((m) => m.role === 'user');
+  const queryText = lastUserMessage?.content || '';
+
+  const queryEmbedding = await embedQuery(queryText, process.env.OPENAI_API_KEY);
+  const relevantChunks = retrieveChunks(queryEmbedding, embeddings);
+  const context = formatRetrievedChunks(relevantChunks);
+
+  return buildRagPayload(messages, context);
+}
 
 export async function handleChatRequest(req, res) {
   const { messages } = req.body || {};
@@ -41,7 +57,9 @@ export async function handleChatRequest(req, res) {
     });
   }
 
-  const payload = buildChatPayload(messages, sources);
+  const payload = useRag
+    ? await buildRagRequest(messages)
+    : buildChatPayload(messages, sources);
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
