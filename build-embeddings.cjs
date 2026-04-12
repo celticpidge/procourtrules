@@ -17,7 +17,8 @@ const CHUNK_OVERLAP = 30; // overlap in tokens
 // Sub-section markers that indicate a distinct rule context within a section.
 // These insert line breaks in the source text so the chunker can split on them.
 const SUB_SECTION_MARKERS = [
-  { pattern: /Single Weekend Leagues and Local\s+League Playoff/g, prefix: '2.01C(5)b LATENESS - WEEKEND LEAGUES AND LOCAL LEAGUE PLAYOFFS.' },
+  { pattern: /2\.01C\(5\)b \(PNW REG\) - When a player is late/g, prefix: '2.01C(5)b LATENESS PENALTIES - REGULAR LOCAL LEAGUE MATCHES.' },
+  { pattern: /Single Weekend Leagues and Local\s+League Playoff/g, prefix: '2.01C(5)b LATENESS PENALTIES - WEEKEND LEAGUES AND LOCAL LEAGUE PLAYOFFS.' },
 ];
 
 function preProcessText(text) {
