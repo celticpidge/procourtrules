@@ -11,8 +11,13 @@ export default function FeedbackForm({ query, response }) {
   const [error, setError] = useState(null);
 
   async function handleRating(value) {
-    setRating(value);
-    setShowForm(true);
+    if (rating === value) {
+      setRating(null);
+      setShowForm(false);
+    } else {
+      setRating(value);
+      setShowForm(true);
+    }
   }
 
   async function handleSubmit(e) {
