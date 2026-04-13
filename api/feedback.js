@@ -25,5 +25,19 @@ export default async function handler(req, res) {
   // Structured log — visible in Vercel function logs (Runtime Logs dashboard)
   console.log(JSON.stringify({ type: 'FEEDBACK', ...feedback }));
 
+  // Forward to Google Sheet for persistent storage + auto-reply
+  const webhookUrl = process.env.GOOGLE_SHEET_WEBHOOK;
+  if (webhookUrl) {
+    try {
+      await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(feedback),
+      });
+    } catch (err) {
+      console.error('Google Sheet webhook failed:', err.message);
+    }
+  }
+
   return res.status(200).json({ success: true });
 }
