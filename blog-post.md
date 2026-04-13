@@ -1,6 +1,6 @@
 # I Haven't Coded in 20 Years. I Just Built an AI App Anyway.
 
-Last month I shipped [Pro Court Rules](https://court-rules.vercel.app) — an AI-powered app that answers natural-language questions about tennis regulations. You type "What happens if my opponent is 12 minutes late?" and it gives you the exact rule, with citations, from five different official source documents.
+Last month I shipped [Pro Court Rules](https://procourtrules.vercel.app) — an AI-powered app that answers natural-language questions about tennis regulations. You type "What happens if my opponent is 12 minutes late?" and it gives you the exact rule, with citations, from five different official source documents.
 
 I'm a tennis player and team captain, not a software engineer. The last time I wrote code professionally, we were deploying to physical servers and JavaScript was something you used to validate form fields. Two decades later, I partnered with an AI coding assistant and built a production app from nothing in a series of evenings.
 
@@ -250,6 +250,10 @@ The home screen shows six "Try asking:" suggestions to guide first-time users. E
 The fix was dead simple: I stored pre-generated answers for all six suggested questions in a static JSON file. When the first message matches a cached question exactly, the hook returns the cached answer immediately — no API call, no loading spinner, no cost. If the user asks a follow-up or types a different question, it goes through the normal RAG pipeline.
 
 This means the "tire-kicker" experience — clicking a suggestion to see what the app does — is instant and free.
+
+### Sources Transparency
+
+One last thing nagged me: users had no idea where the answers were coming from. The model cited rule numbers, but where would someone go to verify? I added a "Sources" button to the header that opens a modal listing all five official documents with direct PDF links. It's a small touch, but it signals that this isn't a hallucination machine — every answer traces back to a real, publicly available document.
 
 ---
 
