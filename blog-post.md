@@ -237,7 +237,9 @@ With the core Q&A working well, I turned to the experience of someone actually *
 
 I wanted to know which answers were helpful and which weren't — without requiring users to create accounts or fill out surveys. I added a simple thumbs-up / thumbs-down UI beneath every assistant response.
 
-The implementation is lightweight: two emoji buttons that expand into an optional comment form with an email field for follow-up. The backend is a Vercel serverless function that logs structured JSON — rating, user query, model response, and any comments — to Vercel's function logs. No database needed.
+The implementation is lightweight: two emoji buttons that expand into an optional comment form with an email field for follow-up. The backend is a Vercel serverless function that forwards feedback as structured JSON to a Google Sheet via Apps Script webhook. Every submission gets a row in the spreadsheet — timestamp, rating, query, response, comment, email — where I can sort, filter, and reply directly. If the user provides an email, the Apps Script auto-sends a "thanks for your feedback" reply. No database, no paid services, just a spreadsheet.
+
+I originally logged feedback to Vercel's function logs, but learned the hard way that the free tier only retains logs for about an hour. The Google Sheets approach is free, persistent, and lets me manage feedback from my phone.
 
 The UI went through several iterations. First the buttons only appeared on hover — but on mobile, hover doesn't exist. I made them always visible. Then the thumbs and the copy button were on separate lines, which wasted space. I used a CSS `display: contents` trick to keep the buttons inline while letting the comment form expand full-width below. Then I over-styled the buttons with green borders and had to rein it back to subtle gray with green on hover.
 
@@ -254,6 +256,20 @@ This means the "tire-kicker" experience — clicking a suggestion to see what th
 ### Sources Transparency
 
 One last thing nagged me: users had no idea where the answers were coming from. The model cited rule numbers, but where would someone go to verify? I added a "Sources" button to the header that opens a modal listing all five official documents with direct PDF links. It's a small touch, but it signals that this isn't a hallucination machine — every answer traces back to a real, publicly available document.
+
+### Mobile Responsive Design
+
+I'd been testing on desktop the whole time. When I finally opened the app on my phone, the header was cramped, the suggestion chips were too wide, and everything felt squeezed. The app had zero responsive CSS.
+
+I added a `@media (max-width: 600px)` breakpoint that hides the subtitle in the header, stacks the suggestion chips vertically, tightens padding throughout, and adjusts font sizes. Small changes, but the mobile experience went from "functional but uncomfortable" to "feels like a native app."
+
+### The Scroll Problem
+
+A subtler UX issue: the chat messages scrolled inside a fixed container, not the page itself. If your mouse wasn't hovering directly over the message area, scrolling did nothing. This is a common pattern in chat apps (Slack, ChatGPT), but for a simple Q&A tool it felt broken.
+
+The fix was switching from an inner-scroll layout to full-page scroll with a sticky header and sticky input bar. Now you can scroll from anywhere on the page, and the header and text input stay pinned where you expect them.
+
+This was the kind of issue I'd never have caught without testing on real devices with real people. The PWA service worker made it worse — cached old CSS meant I had to clear Safari's site data on my phone to even verify the fix worked.
 
 ---
 
@@ -290,6 +306,6 @@ The app has been live since the second day. Every improvement was deployed to pr
 - **AI:** OpenAI API — `gpt-5.4-nano` for answers, `text-embedding-3-small` for retrieval, `gpt-4.1-nano` for query rewriting, `gpt-4.1-mini` for eval judging
 - **Testing:** Vitest (58 unit tests) + custom eval runner (23 gold-standard cases)
 - **Data:** 5 PDF sources → chunked JSON → 618 embedded chunks
-- **UX:** Cached suggestion answers, thumbs-up/down feedback logging
+- **UX:** Cached suggestion answers, thumbs-up/down feedback with Google Sheets + auto-reply, mobile responsive, full-page scroll
 
 The full source is at [github.com/celticpidge/procourtrules](https://github.com/celticpidge/procourtrules).
