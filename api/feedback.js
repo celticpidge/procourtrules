@@ -5,8 +5,8 @@ export default async function handler(req, res) {
 
   const { rating, query, response, comment, email } = req.body;
 
-  if (!rating || !['positive', 'negative'].includes(rating)) {
-    return res.status(400).json({ error: 'Rating must be "positive" or "negative".' });
+  if (!rating || !['positive', 'negative', 'source-suggestion'].includes(rating)) {
+    return res.status(400).json({ error: 'Invalid rating.' });
   }
 
   if (!query || typeof query !== 'string' || !query.trim()) {

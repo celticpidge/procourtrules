@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { sendFeedback } from '../utils/api.js';
 
 const SOURCES = [
   {
@@ -29,6 +30,11 @@ const SOURCES = [
 ];
 
 export default function SourcesModal({ onClose }) {
+  const [suggestion, setSuggestion] = useState('');
+  const [email, setEmail] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
   useEffect(() => {
     function handleKey(e) {
       if (e.key === 'Escape') onClose();
@@ -36,6 +42,25 @@ export default function SourcesModal({ onClose }) {
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
   }, [onClose]);
+
+  async function handleSuggest(e) {
+    e.preventDefault();
+    if (!suggestion.trim()) return;
+    setSubmitting(true);
+    try {
+      await sendFeedback({
+        rating: 'source-suggestion',
+        query: 'Source suggestion',
+        response: suggestion.trim(),
+        email: email.trim() || undefined,
+      });
+      setSubmitted(true);
+    } catch {
+      // silently fail
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -57,6 +82,35 @@ export default function SourcesModal({ onClose }) {
             </li>
           ))}
         </ul>
+
+        <div className="source-suggest">
+          <h3>Suggest a source</h3>
+          {submitted ? (
+            <p className="source-suggest-thanks">Thanks for your suggestion!</p>
+          ) : (
+            <form onSubmit={handleSuggest} className="source-suggest-form">
+              <textarea
+                value={suggestion}
+                onChange={(e) => setSuggestion(e.target.value)}
+                placeholder="Know a document we should include? Tell us about it..."
+                rows={2}
+                maxLength={500}
+                className="feedback-comment"
+              />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email for follow-up (optional)"
+                maxLength={200}
+                className="feedback-email"
+              />
+              <button type="submit" className="feedback-submit" disabled={submitting || !suggestion.trim()}>
+                {submitting ? 'Sending...' : 'Submit'}
+              </button>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );
