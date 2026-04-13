@@ -10,7 +10,15 @@ export async function sendMessage(messages) {
     throw new Error('Connection failed. Please check your network and try again.');
   }
 
-  const data = await response.json();
+  let data;
+  try {
+    data = await response.json();
+  } catch {
+    if (!response.ok) {
+      throw new Error('Server error. Please try again later.');
+    }
+    throw new Error('Unexpected response from server.');
+  }
 
   if (!response.ok) {
     throw new Error(data.error || 'Something went wrong.');

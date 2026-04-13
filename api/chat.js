@@ -63,7 +63,19 @@ export async function handleChatRequest(req, res) {
     return res.status(400).json({ error: 'Request must include a non-empty messages array.' });
   }
 
-  const ip = req.headers['x-forwarded-for'] || 'unknown';
+  // Only allow user/assistant roles — block injected system messages
+  const sanitizedMessages = messages.filter(
+    (m) => m.role === 'user' || m.role === 'assistant'
+  );
+
+  if (sanitizedMessages.length === 0) {
+    return res.status(400).json({ error: 'Request must include a non-empty messages array.' });
+  }
+
+  // Cap conversation history to limit token usage (5 exchanges)
+  const cappedMessages = sanitizedMessages.slice(-10);
+
+  const ip = req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || 'unknown';
   const bypassKey = req.headers['x-api-key'];
   const validBypass = process.env.RATE_LIMIT_BYPASS_KEY && bypassKey === process.env.RATE_LIMIT_BYPASS_KEY;
 
@@ -78,11 +90,10 @@ export async function handleChatRequest(req, res) {
     }
   }
 
-  const payload = useRag
-    ? await buildRagRequest(messages)
-    : buildChatPayload(messages, sources);
-
   try {
+    const payload = useRag
+      ? await buildRagRequest(cappedMessages)
+      : buildChatPayload(cappedMessages, sources);
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -99,7 +110,12 @@ export async function handleChatRequest(req, res) {
     }
 
     const data = await response.json();
-    const assistantMessage = data.choices[0].message.content;
+    const choice = data.choices?.[0];
+    if (!choice?.message?.content) {
+      console.error('OpenAI returned no content', JSON.stringify(data).substring(0, 500));
+      return res.status(502).json({ error: 'AI service returned an empty response.' });
+    }
+    const assistantMessage = choice.message.content;
 
     return res.status(200).json({
       message: assistantMessage,
