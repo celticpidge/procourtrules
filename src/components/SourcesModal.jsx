@@ -34,6 +34,7 @@ export default function SourcesModal({ onClose }) {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [showSuggest, setShowSuggest] = useState(false);
 
   useEffect(() => {
     function handleKey(e) {
@@ -84,8 +85,10 @@ export default function SourcesModal({ onClose }) {
         </ul>
 
         <div className="source-suggest">
-          <h3>Suggest a source</h3>
-          {submitted ? (
+          <button className="source-suggest-toggle" onClick={() => setShowSuggest(!showSuggest)}>
+            {showSuggest ? '▾' : '▸'} Suggest a source
+          </button>
+          {showSuggest && (submitted ? (
             <p className="source-suggest-thanks">Thanks for your suggestion!</p>
           ) : (
             <form onSubmit={handleSuggest} className="source-suggest-form">
@@ -109,7 +112,7 @@ export default function SourcesModal({ onClose }) {
                 {submitting ? 'Sending...' : 'Submit'}
               </button>
             </form>
-          )}
+          ))}
         </div>
       </div>
     </div>

@@ -206,6 +206,21 @@ body {
   margin-bottom: 10px;
 }
 
+.source-suggest-toggle {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 10px;
+}
+
+.source-suggest-toggle:hover {
+  text-decoration: underline;
+}
+
 .source-suggest-form {
   display: flex;
   flex-direction: column;
