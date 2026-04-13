@@ -5,10 +5,14 @@ import cachedAnswers from '../data/cachedAnswers.json';
 const DAILY_LIMIT = 50;
 
 function getQuestionCount() {
-  const match = document.cookie.match(/(?:^|; )pcr_count=([^;]+)/);
-  const countData = match ? JSON.parse(atob(match[1])) : null;
-  const today = new Date().toISOString().slice(0, 10);
-  if (countData && countData.d === today) return countData.n;
+  try {
+    const match = document.cookie.match(/(?:^|; )pcr_count=([^;]+)/);
+    const countData = match ? JSON.parse(atob(match[1])) : null;
+    const today = new Date().toISOString().slice(0, 10);
+    if (countData && countData.d === today) return countData.n;
+  } catch {
+    // Corrupt or tampered cookie — treat as fresh
+  }
   return 0;
 }
 

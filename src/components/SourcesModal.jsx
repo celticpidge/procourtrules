@@ -40,6 +40,7 @@ export default function SourcesModal({ onClose }) {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showSuggest, setShowSuggest] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     function handleKey(e) {
@@ -53,6 +54,7 @@ export default function SourcesModal({ onClose }) {
     e.preventDefault();
     if (!suggestion.trim()) return;
     setSubmitting(true);
+    setError(null);
     try {
       await sendFeedback({
         rating: 'source-suggestion',
@@ -62,7 +64,7 @@ export default function SourcesModal({ onClose }) {
       });
       setSubmitted(true);
     } catch {
-      // silently fail
+      setError('Failed to submit. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -119,6 +121,7 @@ export default function SourcesModal({ onClose }) {
                 maxLength={200}
                 className="feedback-email"
               />
+              {error && <div className="feedback-error">{error}</div>}
               <button type="submit" className="feedback-submit" disabled={submitting || !suggestion.trim()}>
                 {submitting ? 'Sending...' : 'Submit'}
               </button>
