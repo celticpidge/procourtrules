@@ -76,7 +76,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
 
       {remaining !== null && (
         <div className="chat-remaining">
-          {remaining} question{remaining !== 1 ? 's' : ''} remaining today
+          {20 - remaining} of 20 questions used today
         </div>
       )}
     </div>
