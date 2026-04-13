@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { sendMessage } from '../utils/api.js';
+import cachedAnswers from '../data/cachedAnswers.json';
 
 export function useChat() {
   const [messages, setMessages] = useState([]);
@@ -13,6 +14,13 @@ export function useChat() {
     const userMessage = { role: 'user', content };
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
+
+    const cached = cachedAnswers[content];
+    if (cached && updatedMessages.length === 1) {
+      setMessages((prev) => [...prev, { role: 'assistant', content: cached }]);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
