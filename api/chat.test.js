@@ -81,7 +81,7 @@ describe('handleChatRequest', () => {
     const res = makeRes();
 
     // Exhaust the rate limit
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 50; i++) {
       const r = makeRes();
       mockRagSuccess();
       await handleChatRequest(

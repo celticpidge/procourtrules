@@ -11,6 +11,7 @@ import { sendMessage } from '../utils/api.js';
 describe('useChat', () => {
   beforeEach(() => {
     sendMessage.mockReset();
+    document.cookie = 'pcr_count=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
   });
 
   it('starts with no messages and not loading', () => {
@@ -126,6 +127,7 @@ describe('useChat', () => {
       await result.current.send('Q');
     });
 
-    expect(result.current.remaining).toBe(15);
+    // remaining is now derived from cookie counter: DAILY_LIMIT (50) - count (1) = 49
+    expect(result.current.remaining).toBe(49);
   });
 });

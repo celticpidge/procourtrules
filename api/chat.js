@@ -25,7 +25,7 @@ const useRag = existsSync(embeddingsPath);
 const embeddings = useRag ? JSON.parse(readFileSync(embeddingsPath, 'utf-8')) : null;
 
 const limiter = createRateLimiter({
-  maxRequests: 20,
+  maxRequests: 50,
   windowMs: 24 * 60 * 60 * 1000,
 });
 
