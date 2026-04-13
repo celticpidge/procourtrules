@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { sendMessage } from '../utils/api.js';
 import cachedAnswers from '../data/cachedAnswers.json';
 
-const DAILY_LIMIT = 20;
+const DAILY_LIMIT = 50;
 
 function getQuestionCount() {
   const match = document.cookie.match(/(?:^|; )pcr_count=([^;]+)/);

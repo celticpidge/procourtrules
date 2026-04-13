@@ -127,7 +127,7 @@ describe('useChat', () => {
       await result.current.send('Q');
     });
 
-    // remaining is now derived from cookie counter: DAILY_LIMIT (20) - count (1) = 19
-    expect(result.current.remaining).toBe(19);
+    // remaining is now derived from cookie counter: DAILY_LIMIT (50) - count (1) = 49
+    expect(result.current.remaining).toBe(49);
   });
 });
