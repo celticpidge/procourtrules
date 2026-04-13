@@ -218,12 +218,12 @@ The force-push corrupted file permissions in the git history, which broke Vercel
 
 ## Where It Ended Up
 
-After all of this iteration, the eval suite runs 23 test cases:
+After all of this iteration, the eval suite runs 25 test cases:
 
-- **23/23 overall PASS**
-- **43/44 must_include criteria met**
-- **33/33 must_not_include criteria met**
-- **22/23 expected sources found in retrieval**
+- **24/25 overall PASS** (with one known flicker)
+- **46/50 must_include criteria met**
+- **37/37 must_not_include criteria met**
+- **24/25 expected sources found in retrieval**
 
 The one missing must_include criterion is the racism case (E039), where the answer correctly explains the relevant rules but doesn't use one specific term the eval expects — because that term isn't in the source corpus. The system correctly identifies it as unsportsmanlike conduct and cites the right rules. Close enough for a vocabulary gap that can't be solved by retrieval alone.
 
@@ -273,6 +273,48 @@ This was the kind of issue I'd never have caught without testing on real devices
 
 ---
 
+## Step 9: Rate Limiting and Security Hardening
+
+With the app live and working, I started thinking about what could go wrong if strangers found it.
+
+### The Cost Problem
+
+Every question costs money — embedding the query, rewriting it, embedding the rewrite, and generating the answer. Four OpenAI API calls per question. At low volume it's pennies, but there's nothing stopping someone from scripting 10,000 requests and running up my bill.
+
+I set an OpenAI spending cap as a hard backstop, but I wanted something less blunt.
+
+### Client-Side Rate Limiting
+
+The first layer is a cookie-based counter in the browser. Each question increments a counter stored in a base64-encoded cookie (`pcr_count`) that tracks the date and count. When you hit 50 questions in a day, the app shows an error and stops sending requests. The display updates to show "X of 50 questions used today."
+
+Is this bypassable? Absolutely — clear your cookies, open incognito, or edit the cookie value. It's a speed bump, not a wall. Its job is to prevent accidental overuse and give casual users a clear quota.
+
+### Server-Side Rate Limiting
+
+The second layer is an in-memory rate limiter on the Vercel serverless function, keyed by IP address. Same 50-request daily limit. This catches anyone who bypasses the client-side cookie.
+
+**Caveat:** Vercel serverless functions are stateless — the in-memory Map resets on every cold start. So this limiter works well when the function is warm (which it usually is during active use) but doesn't persist across deploys or cold starts. A persistent store like Redis would be better, but I didn't want another account and another service to manage. Between the client cookie, the server limiter, and the OpenAI spending cap, the risk is bounded.
+
+### The Security Review
+
+Once rate limiting was in place, I did something I should have done earlier: a systematic code review across the entire codebase. Not "does it work" but "what can go wrong."
+
+I found eight issues, ranging from crash bugs to injection vectors:
+
+**Crash paths:** The RAG pipeline (embedding + rewriting) ran *outside* the try/catch block in the API handler. If OpenAI's embeddings API went down, the server threw an unhandled exception — no friendly error message, just a raw 500. Similarly, the cookie parser would crash the whole chat if someone tampered with the cookie value. And if OpenAI returned an empty `choices` array (content filter edge case), accessing `choices[0].message.content` threw.
+
+**Prompt injection:** The server accepted whatever message roles the client sent. A malicious user could POST a message with `role: "system"` and `content: "Ignore all previous instructions"` — and the server would pass it straight to OpenAI alongside the real system prompt. The fix was simple: filter incoming messages to only allow `user` and `assistant` roles.
+
+**Unbounded token cost:** The client sent the entire conversation history on every request. In a long conversation, this could be thousands of tokens of chat history on top of the system prompt and retrieved chunks. I capped it to the last 10 messages (5 exchanges) — enough context for follow-ups, bounded cost.
+
+**IP spoofing:** The rate limiter used the `x-forwarded-for` header, which a client can fake. Switching to Vercel's `x-real-ip` header (set by Vercel's proxy, not spoofable) closed that gap.
+
+**Misleading errors:** If the server returned a non-JSON error page (Vercel's raw 500 during an outage), the client's `response.json()` call threw, and the catch block said "Connection failed — check your network." The network was fine; the server was broken. Better error messages help users (and me) diagnose what's actually wrong.
+
+None of these were visible to normal users. All of them would have been embarrassing in a code review or catastrophic in an adversarial scenario. The experience reinforced something I've heard engineers say: the features you ship are the easy part. The edges and failure modes are where the real work lives.
+
+---
+
 ## What I Actually Learned
 
 ### AI assistants change what's possible, not what's easy
@@ -304,8 +346,9 @@ The app has been live since the second day. Every improvement was deployed to pr
 - **Frontend:** React 18 + Vite, PWA with offline caching
 - **Backend:** Vercel serverless functions (Node.js)
 - **AI:** OpenAI API — `gpt-5.4-nano` for answers, `text-embedding-3-small` for retrieval, `gpt-4.1-nano` for query rewriting, `gpt-4.1-mini` for eval judging
-- **Testing:** Vitest (58 unit tests) + custom eval runner (23 gold-standard cases)
+- **Testing:** Vitest (58 unit tests) + custom eval runner (25 gold-standard cases)
 - **Data:** 5 PDF sources → chunked JSON → 618 embedded chunks
 - **UX:** Cached suggestion answers, thumbs-up/down feedback with Google Sheets + auto-reply, mobile responsive, full-page scroll
+- **Security:** Client-side cookie rate limiting (50/day), server-side IP rate limiting, message role sanitization, conversation history cap, OpenAI spending cap
 
 The full source is at [github.com/celticpidge/procourtrules](https://github.com/celticpidge/procourtrules).
