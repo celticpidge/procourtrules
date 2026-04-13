@@ -705,5 +705,75 @@
       "no rule against racism",
       "just ignore it"
     ]
-  }
+  },
+  {
+  "id": "E040",
+  "gold_status": "exact_bound",
+  "user_query": "What about if they offer a substitute for a late player?",
+  "expected_context": {
+    "officiated": "either",
+    "competition": "league"
+  },
+  "expected_controlling_source": "USTA League Regulations (National)",
+  "expected_source_priority": 2,
+  "expected_rule_reference": "USTA League Regulations - Lineup and Substitution Rules",
+  "expected_citation_string": "USTA League Regulations",
+  "right_answer": "No, a substitute is generally not allowed after lineups have been exchanged. Substitutions must follow league regulations and typically must occur before lineup exchange. If a player is late and no valid substitution is permitted under the rules, the position is subject to default.",
+  "evidence": [
+    {
+      "source": "USTA League Regulations (National)",
+      "quote_or_paraphrase": "Lineups are exchanged prior to the match and become official at that time. Player substitutions are governed by league regulations and are generally not permitted after lineup exchange.",
+      "citation": "USTA League Regulations - Lineup Exchange Section"
+    },
+    {
+      "source": "PNW League Regulations",
+      "quote_or_paraphrase": "Local league rules define when substitutions are allowed; typically substitutions must be made before lineup exchange or within specific local allowances.",
+      "citation": "PNW League Regulations - Local Rules"
+    }
+  ],
+  "must_include": [
+    "substitution not allowed after lineup exchange OR lineup is locked",
+    "must follow league regulations",
+    "possible default if no valid player"
+  ],
+  "must_not_include": [
+    "players can freely substitute at any time",
+    "opponent agreement overrides league rules automatically"
+  ]
+},
+{
+  "id": "E041",
+  "gold_status": "exact_bound",
+  "user_query": "What if both captains agree to allow a substitute for a late player?",
+  "expected_context": {
+    "officiated": "either",
+    "competition": "league"
+  },
+  "expected_controlling_source": "USTA League Regulations (National)",
+  "expected_source_priority": 2,
+  "expected_rule_reference": "USTA League Regulations - Lineup and Substitution Rules",
+  "expected_citation_string": "USTA League Regulations",
+  "right_answer": "No, even if both captains agree, substitutions must follow league regulations. Once lineups are exchanged, they are official and cannot be changed unless the specific league rules explicitly allow it. Captain agreement does not override league rules, and an invalid substitution could result in a default or disqualification.",
+  "evidence": [
+    {
+      "source": "USTA League Regulations (National)",
+      "quote_or_paraphrase": "Lineups become official upon exchange and must comply with league regulations. Matches must be played in accordance with the rules, and captains cannot override these rules by agreement.",
+      "citation": "USTA League Regulations - Lineup Exchange Section"
+    },
+    {
+      "source": "Friend at Court (USTA Comments & Cases)",
+      "quote_or_paraphrase": "Agreements between players or captains that are contrary to the Rules of Tennis or applicable regulations are not valid.",
+      "citation": "Friend at Court - General Principles"
+    }
+  ],
+  "must_include": [
+    "captains cannot override league rules",
+    "lineup is locked after exchange",
+    "invalid substitution may lead to default or disqualification"
+  ],
+  "must_not_include": [
+    "agreement between captains makes it automatically valid",
+    "rules can be ignored if both teams agree"
+  ]
+}
 ]
