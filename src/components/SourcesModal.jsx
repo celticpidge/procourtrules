@@ -5,26 +5,31 @@ const SOURCES = [
   {
     name: 'PNW League Regulations',
     description: 'Pacific Northwest Section league rules (August 2025)',
+    tag: 'Local — Highest Priority',
     url: 'https://www.usta.com/content/dam/usta/sections/pacific-northwest/pdfs/play/league-regulations/pnw-league-regulations-august-2025.pdf',
   },
   {
     name: 'USTA National League Regulations',
     description: 'National regulations with Q&A interpretations (2025)',
+    tag: 'National',
     url: 'https://www.usta.com/content/dam/usta/2025-pdfs/2025-national-regulations-with-q-a-interpretations.pdf',
   },
   {
     name: 'The Code',
     description: 'The players\u2019 guide for unofficiated matches',
+    tag: 'Player Conduct',
     url: 'https://www.usta.com/content/dam/usta/pdfs/2015_Code.pdf',
   },
   {
     name: 'Friend at Court',
     description: 'USTA handbook of rules and regulations',
+    tag: 'Reference',
     url: 'https://www.usta.com/content/dam/usta/coach-organize/content-fragments/resource-library/assets/pdfs/friend-at-court.pdf',
   },
   {
     name: 'ITF Rules of Tennis',
     description: 'Official international rules of tennis (2026)',
+    tag: 'International',
     url: 'https://www.itftennis.com/media/7221/2026-rules-of-tennis-english.pdf',
   },
 ];
@@ -71,15 +76,21 @@ export default function SourcesModal({ onClose }) {
           <button className="modal-close" onClick={onClose} aria-label="Close">&times;</button>
         </div>
         <p className="modal-description">
-          Answers are generated from these five official tennis regulation documents:
+          Answers are generated from five official tennis regulation documents, listed in priority order:
         </p>
         <ul className="sources-list">
-          {SOURCES.map((s) => (
+          {SOURCES.map((s, i) => (
             <li key={s.name} className="source-item">
-              <a href={s.url} target="_blank" rel="noopener noreferrer" className="source-link">
-                {s.name}
-              </a>
-              <span className="source-desc">{s.description}</span>
+              <div className="source-item-header">
+                <span className="source-priority">{i + 1}</span>
+                <div className="source-item-text">
+                  <a href={s.url} target="_blank" rel="noopener noreferrer" className="source-link">
+                    {s.name} <span className="source-ext">↗</span>
+                  </a>
+                  <span className="source-desc">{s.description}</span>
+                </div>
+              </div>
+              <span className="source-tag">{s.tag}</span>
             </li>
           ))}
         </ul>
