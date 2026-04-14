@@ -775,5 +775,243 @@
     "agreement between captains makes it automatically valid",
     "rules can be ignored if both teams agree"
   ]
-}
+},
+{
+    "id": "E042",
+    "gold_status": "exact_bound",
+    "user_query": "In a timed USTA match, what happens when time runs out during a point?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "league"
+    },
+    "expected_controlling_source": "PNW League Regulations",
+    "expected_source_priority": 1,
+    "expected_rule_reference": "PNW Timed Match Procedures",
+    "expected_citation_string": "PNW League Regulations",
+    "right_answer": "The point already in progress must be completed, and then play stops. No new point is started after time expires.",
+    "evidence": [
+      {
+        "source": "PNW League Regulations",
+        "quote_or_paraphrase": "A point in play as the timer goes off should be finished.",
+        "citation": "PNW Timed Match Procedures"
+      }
+    ],
+    "must_include": [
+      "finish the point in progress",
+      "no new point after time expires"
+    ],
+    "must_not_include": [
+      "stop immediately mid-point",
+      "start another point after time expires"
+    ]
+  },
+  {
+    "id": "E043",
+    "gold_status": "exact_bound",
+    "user_query": "In a USTA timed match, does an unfinished game count when time expires?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "league"
+    },
+    "expected_controlling_source": "PNW League Regulations",
+    "expected_source_priority": 1,
+    "expected_rule_reference": "PNW Timed Match Procedures",
+    "expected_citation_string": "PNW League Regulations",
+    "right_answer": "No. Any unfinished game is discarded and does not count. Only completed games are included in the final score.",
+    "evidence": [
+      {
+        "source": "PNW League Regulations",
+        "quote_or_paraphrase": "Any unfinished game is tossed out.",
+        "citation": "PNW Timed Match Procedures"
+      }
+    ],
+    "must_include": [
+      "unfinished game does not count",
+      "only completed games count"
+    ],
+    "must_not_include": [
+      "partial games count",
+      "score within unfinished game is used"
+    ]
+  },
+  {
+    "id": "E044",
+    "gold_status": "exact_bound",
+    "user_query": "How is the winner determined in a USTA timed match?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "league"
+    },
+    "expected_controlling_source": "PNW League Regulations",
+    "expected_source_priority": 1,
+    "expected_rule_reference": "Timed Match Procedures",
+    "expected_citation_string": "PNW League Regulations",
+    "right_answer": "The winner is the player or team with the most total completed games won when time expires.",
+    "evidence": [
+      {
+        "source": "PNW League Regulations",
+        "quote_or_paraphrase": "Whichever team has the most games won is declared the winner.",
+        "citation": "Timed Match Procedures"
+      }
+    ],
+    "must_include": [
+      "most games wins",
+      "based on completed games"
+    ],
+    "must_not_include": [
+      "sets determine the winner",
+      "must win two sets"
+    ]
+  },
+  {
+    "id": "E045",
+    "gold_status": "exact_bound",
+    "user_query": "Can a team win a set but still lose a timed USTA match?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "league"
+    },
+    "expected_controlling_source": "PNW League Regulations",
+    "expected_source_priority": 1,
+    "expected_rule_reference": "Timed Match Procedures",
+    "expected_citation_string": "PNW League Regulations",
+    "right_answer": "Yes. Because timed matches are decided by total games won, a team can win a set but still lose the match if they have fewer total games.",
+    "evidence": [
+      {
+        "source": "PNW League Regulations",
+        "quote_or_paraphrase": "Whichever team has the most games won is declared the winner.",
+        "citation": "Timed Match Procedures"
+      }
+    ],
+    "must_include": [
+      "games not sets determine winner",
+      "possible to win a set and lose match"
+    ],
+    "must_not_include": [
+      "winning a set guarantees winning the match"
+    ]
+  },
+  {
+    "id": "E046",
+    "gold_status": "section_dependent",
+    "user_query": "What happens if the total games are tied when time expires in a USTA timed match?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "league"
+    },
+    "expected_controlling_source": "PNW League Regulations",
+    "expected_source_priority": 1,
+    "expected_rule_reference": "Timed Match Procedures",
+    "expected_citation_string": "PNW League Regulations",
+    "right_answer": "If total games are tied when time expires, many USTA timed match procedures require a single deciding or sudden-death point to determine the winner, depending on the local league rules.",
+    "evidence": [
+      {
+        "source": "PNW League Regulations",
+        "quote_or_paraphrase": "If score is tied, play one deciding point.",
+        "citation": "Timed Match Procedures"
+      }
+    ],
+    "must_include": [
+      "tied games",
+      "deciding or sudden death point",
+      "depends on local rules"
+    ],
+    "must_not_include": [
+      "match automatically ends in a tie",
+      "full tiebreak set is played"
+    ]
+  },
+  {
+    "id": "E047",
+    "gold_status": "section_dependent",
+    "user_query": "If time expires in the middle of a game that is tied, how is that handled in a USTA timed match?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "league"
+    },
+    "expected_controlling_source": "PNW League Regulations",
+    "expected_source_priority": 1,
+    "expected_rule_reference": "Timed Match Procedures",
+    "expected_citation_string": "PNW League Regulations",
+    "right_answer": "In some timed match procedures, if the game score is tied when time expires, a single deciding point is played to complete the game, depending on local league rules.",
+    "evidence": [
+      {
+        "source": "PNW League Regulations",
+        "quote_or_paraphrase": "If the game is tied, one more point may be played to decide it.",
+        "citation": "Timed Match Procedures"
+      }
+    ],
+    "must_include": [
+      "tied game",
+      "single deciding point",
+      "local rules apply"
+    ],
+    "must_not_include": [
+      "game is automatically discarded if tied",
+      "resume full game later"
+    ]
+  },
+  {
+    "id": "E048",
+    "gold_status": "exact_bound",
+    "user_query": "Are USTA timed matches decided by sets or games?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "league"
+    },
+    "expected_controlling_source": "PNW League Regulations",
+    "expected_source_priority": 1,
+    "expected_rule_reference": "Timed Match Procedures",
+    "expected_citation_string": "PNW League Regulations",
+    "right_answer": "USTA timed matches are decided by total completed games won, not by sets.",
+    "evidence": [
+      {
+        "source": "PNW League Regulations",
+        "quote_or_paraphrase": "Whichever team has the most games won is declared the winner.",
+        "citation": "Timed Match Procedures"
+      }
+    ],
+    "must_include": [
+      "games determine winner",
+      "not sets"
+    ],
+    "must_not_include": [
+      "sets determine winner"
+    ]
+  },
+  {
+    "id": "E049",
+    "gold_status": "exact_bound",
+    "user_query": "Give me a simple summary of the rules for a USTA timed match.",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "league"
+    },
+    "expected_controlling_source": "PNW League Regulations",
+    "expected_source_priority": 1,
+    "expected_rule_reference": "Timed Match Procedures",
+    "expected_citation_string": "PNW League Regulations",
+    "right_answer": "Play until time expires, finish the point in progress, count only completed games, and the player or team with the most games wins. If tied, a deciding point may be played depending on local rules.",
+    "evidence": [
+      {
+        "source": "PNW League Regulations",
+        "quote_or_paraphrase": "A point in play as the timer goes off should be finished.",
+        "citation": "Timed Match Procedures"
+      },
+      {
+        "source": "PNW League Regulations",
+        "quote_or_paraphrase": "Any unfinished game is tossed out.",
+        "citation": "Timed Match Procedures"
+      }
+    ],
+    "must_include": [
+      "finish current point",
+      "only completed games count",
+      "most games wins"
+    ],
+    "must_not_include": [
+      "sets determine winner",
+      "unfinished games count"
+    ]
+  }
 ]

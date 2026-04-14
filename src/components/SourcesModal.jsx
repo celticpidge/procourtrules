@@ -9,6 +9,11 @@ const SOURCES = [
     url: 'https://www.usta.com/content/dam/usta/sections/pacific-northwest/pdfs/play/league-regulations/pnw-league-regulations-august-2025.pdf',
   },
   {
+    name: 'PNW Timed Match Procedures',
+    description: 'USTA PNW Adult League timed match scoring and procedures',
+    tag: 'Local — Highest Priority',
+  },
+  {
     name: 'USTA National League Regulations',
     description: 'National regulations with Q&A interpretations (2025)',
     tag: 'National',
@@ -78,7 +83,7 @@ export default function SourcesModal({ onClose }) {
           <button className="modal-close" onClick={onClose} aria-label="Close">&times;</button>
         </div>
         <p className="modal-description">
-          Answers are generated from five official tennis regulation documents, listed in priority order:
+          Answers are generated from six official tennis regulation documents, listed in priority order:
         </p>
         <ul className="sources-list">
           {SOURCES.map((s, i) => (
@@ -86,9 +91,13 @@ export default function SourcesModal({ onClose }) {
               <div className="source-item-header">
                 <span className="source-priority">{i + 1}</span>
                 <div className="source-item-text">
-                  <a href={s.url} target="_blank" rel="noopener noreferrer" className="source-link">
-                    {s.name} <span className="source-ext">↗</span>
-                  </a>
+                  {s.url ? (
+                    <a href={s.url} target="_blank" rel="noopener noreferrer" className="source-link">
+                      {s.name} <span className="source-ext">↗</span>
+                    </a>
+                  ) : (
+                    <span className="source-link">{s.name}</span>
+                  )}
                   <span className="source-desc">{s.description}</span>
                 </div>
               </div>
