@@ -2,6 +2,8 @@
 
 Implementation spec for an AI coding agent. Self-contained; assumes no prior knowledge of the codebase.
 
+This spec is implemented by the repository's embedding pipeline in `build-embeddings.cjs`, which produces the runtime retrieval corpus consumed by `api/chat.js` via `src/data/embeddings.json`.
+
 ---
 
 ## 1. Goals
