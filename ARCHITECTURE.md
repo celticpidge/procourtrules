@@ -39,6 +39,7 @@ flowchart TB
 
         subgraph Data["Runtime Data"]
             Embeddings["embeddings.json<br/>620 embedded chunks"]
+            RetrievedContext["retrieved context<br/>formatted top chunks"]
             Sources["5 source JSON files<br/>PNW / USTA / Code / FAC / ITF"]
         end
     end
@@ -87,8 +88,10 @@ flowchart TB
     Retrieval --> Embeddings
     Retrieval -- "embed query" --> EmbeddingModel
     Retrieval -- "rewrite query" --> RewriteModel
+    Retrieval --> RetrievedContext
     ChatHandler --> PayloadBuilder
-    PayloadBuilder --> Sources
+    RetrievedContext --> PayloadBuilder
+    Sources -- "fallback only<br/>buildChatPayload()" --> PayloadBuilder
     ChatHandler -- "chat completions" --> AnswerModel
 
     PDFs --> Extract --> Sources
@@ -117,11 +120,11 @@ flowchart TB
    - embeds the rewrite
    - retrieves top chunks with a weighted dual-embedding score plus source diversity pass
    - formats those chunks into grouped source context
-   - builds a RAG system prompt with source hierarchy instructions
+   - builds a RAG system prompt from that retrieved context with source hierarchy instructions
 5. The server sends that prompt to `gpt-5.4-nano` and returns `{ message, remaining }`.
 6. The client renders the answer as sanitized markdown and exposes copy + feedback actions.
 
-If `embeddings.json` is missing, `api/chat.js` falls back to the older full-context prompt path using the raw source JSON files.
+If `embeddings.json` is missing, `api/chat.js` falls back to the older full-context prompt path, where `buildChatPayload()` uses the raw source JSON files directly.
 
 ### Feedback
 
