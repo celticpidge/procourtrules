@@ -1,5 +1,7 @@
 # Pro Court Rules — Work Log
 
+> Historical note: this file tracks the original buildout. The current production architecture is **RAG-first** (`embeddings.json` + `retrieval.js`), includes `/api/feedback`, uses **50/day** client and server limits, and has **58 tests across 7 files**. Older sections below describe how the app evolved and are not always a complete picture of the current runtime path.
+
 ## Session Overview
 
 Built a complete AI-powered Progressive Web App (PWA) called **Pro Court Rules** that answers natural language questions about PNW tennis league regulations using OpenAI's API. The app was developed from scratch using a **test-driven development (TDD)** approach across 6 development loops, deployed to Vercel, and iteratively improved for accuracy, style, and multi-source rule support.
@@ -30,7 +32,7 @@ Each loop followed red-green-refactor: write failing tests first, implement to p
 
 **Loop 3 — Rate Limiter** (`src/services/rateLimiter.js`, 8 tests)
 - `createRateLimiter({ maxRequests, windowMs })` creates an in-memory, IP-based rate limiter
-- Configuration: 20 questions per IP per 24-hour rolling window
+- Initial configuration: 20 questions per IP per 24-hour rolling window
 - Returns `{ allowed, remaining, retryAfter }` on each check
 - Independent tracking per client IP
 
@@ -117,6 +119,34 @@ Each loop followed red-green-refactor: write failing tests first, implement to p
 - **Added Vercel Speed Insights** (`@vercel/speed-insights`) — `<SpeedInsights />` component in `App.jsx` for Core Web Vitals reporting
 - **Added Vercel Analytics** (`@vercel/analytics`) — `<Analytics />` component in `App.jsx` for page view and event tracking
 
+### Phase 7: Retrieval, Cached Answers, and Feedback
+
+- **Shifted the app from full-context prompting to RAG-first runtime behavior**
+  - Added `src/services/retrieval.js` with:
+    - query embeddings via `text-embedding-3-small`
+    - query rewrite via `gpt-4.1-nano`
+    - cosine-similarity ranking
+    - dual-embedding scoring with capped rewrite boost
+    - source-diversity pass so strong chunks from additional sources are not dropped
+- **Built the chunking + embedding pipeline**
+  - Added `build-embeddings.cjs` to preprocess source text, detect section headings, split text into section-aware chunks, and embed the corpus
+  - Runtime corpus now lives in `src/data/embeddings.json`
+  - Current corpus size: **620 embedded chunks**
+- **Added evaluation tooling**
+  - Added `run-evals.cjs` for retrieval and answer eval runs against the embedded corpus
+  - Added `evals/` cases to check controlling-source retrieval and answer quality
+- **Added cached first-turn answers**
+  - `src/hooks/useChat.js` now short-circuits exact-match first-turn suggestions to `src/data/cachedAnswers.json`
+  - This reduces latency and cost for the six suggested starter prompts
+- **Added user feedback and source suggestions**
+  - Added `api/feedback.js`
+  - Added `src/components/FeedbackForm.jsx` for thumbs-up/down feedback on assistant answers
+  - Added `src/components/SourcesModal.jsx` so users can inspect sources and suggest missing ones
+  - Optional webhook forwarding persists feedback to Google Sheets
+- **Raised visible usage limits to 50/day**
+  - Browser-side cookie quota in `useChat()` is now 50/day
+  - Server-side IP limiter in `api/chat.js` is also configured to 50/day
+
 ---
 
 ## File Reference
@@ -132,14 +162,16 @@ Each loop followed red-green-refactor: write failing tests first, implement to p
 | File | Purpose |
 |---|---|
 | `src/services/chatService.js` | Factory for managing conversation message state |
-| `src/services/payloadBuilder.js` | Builds OpenAI API payload with system prompt + rules + conversation |
-| `src/services/rateLimiter.js` | In-memory IP-based rate limiting (20 req/day/IP) |
+| `src/services/payloadBuilder.js` | Builds OpenAI API payloads for both full-context and RAG paths |
+| `src/services/retrieval.js` | Query embedding, rewrite, ranking, and formatting for RAG retrieval |
+| `src/services/rateLimiter.js` | In-memory IP-based rate limiting (currently used at 50 req/day/IP in `api/chat.js`) |
 
 ### API Layer
 | File | Purpose |
 |---|---|
 | `api/chat.js` | Vercel serverless function — validates, rate-limits, calls OpenAI |
-| `src/utils/api.js` | Frontend fetch wrapper for `/api/chat` |
+| `api/feedback.js` | Vercel serverless function for feedback and source suggestions |
+| `src/utils/api.js` | Frontend fetch wrapper for `/api/chat` and `/api/feedback` |
 
 ### React Hooks & Components
 | File | Purpose |
@@ -147,9 +179,11 @@ Each loop followed red-green-refactor: write failing tests first, implement to p
 | `src/hooks/useChat.js` | Hook managing messages, loading, errors, remaining quota |
 | `src/components/ChatWindow.jsx` | Main chat UI with input form, messages, suggestions |
 | `src/components/MessageBubble.jsx` | Individual message display (user vs assistant styling) |
+| `src/components/FeedbackForm.jsx` | Assistant-answer feedback UI |
+| `src/components/SourcesModal.jsx` | Source list modal with source suggestion form |
 | `src/components/SuggestedQuestions.jsx` | 6 clickable example questions |
 | `src/components/TypingIndicator.jsx` | Animated loading dots |
-| `src/components/Header.jsx` | App title bar with "New Chat" button |
+| `src/components/Header.jsx` | App title bar with "Sources" and "New Chat" actions |
 
 ### Styles & Assets
 | File | Purpose |
@@ -161,12 +195,13 @@ Each loop followed red-green-refactor: write failing tests first, implement to p
 ### Data
 | File | Purpose |
 |---|---|
-| `src/data/rules.json` | Original structured PNW rules (12 categories, ~50 rules with tables) |
 | `src/data/pnw-league-regs.json` | Extracted PNW League Regulations text |
 | `src/data/usta-league-regs.json` | Extracted USTA National League Regulations text |
 | `src/data/the-code.json` | Extracted The Code text |
-| `src/data/friend-at-court.json` | Extracted Friend at Court text |
+| `src/data/friend-at-court-unique.json` | De-duplicated Friend at Court text used by runtime and embeddings |
 | `src/data/itf-rules.json` | Extracted ITF Rules of Tennis text |
+| `src/data/cachedAnswers.json` | Exact-match cached answers for suggested first-turn prompts |
+| `src/data/embeddings.json` | Embedded chunk corpus used by the runtime retriever |
 
 ### Build & Config
 | File | Purpose |
@@ -180,18 +215,22 @@ Each loop followed red-green-refactor: write failing tests first, implement to p
 | File | Purpose |
 |---|---|
 | `extract-pdfs.cjs` | PDF text extraction script using pdf-parse v2 |
+| `build-embeddings.cjs` | Section-aware chunking + embedding pipeline |
+| `generate-cached-answers.mjs` | Refreshes cached answers from the live API |
+| `run-evals.cjs` | Runs retrieval and answer evals against the corpus |
 
 ### Tests
 | File | Tests |
 |---|---|
 | `src/services/chatService.test.js` | 8 tests — message management, validation, immutability |
-| `src/services/payloadBuilder.test.js` | 13 tests — payload structure, model, temperature, system prompt content |
+| `src/services/payloadBuilder.test.js` | 15 tests — payload structure, model, temperature, system prompt content |
 | `src/services/rateLimiter.test.js` | 8 tests — allow/block, window expiry, independent tracking |
+| `src/services/retrieval.test.js` | 8 tests — similarity ranking and source-grouped formatting |
 | `api/chat.test.js` | 7 tests — validation, rate limiting, OpenAI integration, error handling |
 | `src/utils/api.test.js` | 4 tests — fetch wrapper, HTTP errors, network failures |
 | `src/hooks/useChat.test.js` | 8 tests — hook state management, API calls, error handling, reset |
 
-**Total: 48 tests, all passing**
+**Total: 58 tests, all passing**
 
 ---
 
