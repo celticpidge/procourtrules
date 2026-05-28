@@ -763,12 +763,63 @@ body {
   cursor: not-allowed;
 }
 
+.chat-voice {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.chat-voice:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--bg-primary);
+}
+
+.chat-voice-listening {
+  background: rgba(239, 83, 80, 0.12);
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.chat-voice:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.chat-voice-icon {
+  width: 20px;
+  height: 20px;
+}
+
 /* Remaining */
 .chat-remaining {
   text-align: center;
   font-size: 0.75rem;
   color: var(--text-secondary);
   padding: 6px;
+}
+
+.chat-voice-note {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  padding: 6px 12px 0;
+}
+
+.chat-voice-error {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--error);
+  padding: 6px 12px 0;
 }
 
 /* Error */
@@ -874,6 +925,17 @@ body {
     width: 40px;
     height: 40px;
     font-size: 1.1rem;
+  }
+
+  .chat-voice {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .chat-voice-icon {
+    width: 18px;
+    height: 18px;
   }
 
   .modal-content {
