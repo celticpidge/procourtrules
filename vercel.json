@@ -6,6 +6,9 @@
     },
     "api/feedback.js": {
       "maxDuration": 10
+    },
+    "api/transcribe.js": {
+      "maxDuration": 30
     }
   },
   "rewrites": [
