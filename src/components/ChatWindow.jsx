@@ -429,6 +429,11 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       };
       recorder.start(RECORDER_TIMESLICE_MS);
       startVoiceSession('recorder');
+      // If browser speech preview is unavailable (common on mobile),
+      // enable recorder-based live updates right away.
+      if (!speechSupported) {
+        progressivePreviewEnabledRef.current = true;
+      }
       startLivePreviewRecognition();
       beginAutoStopWatchers(stream, recorder);
       setIsVoiceListening(true);
