@@ -150,6 +150,11 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
     return { audioBitsPerSecond: AUDIO_BITRATE };
   }
 
+  function resolveRecordingMimeType(recorder, chunks) {
+    const firstChunkWithType = chunks?.find((chunk) => chunk?.type);
+    return firstChunkWithType?.type || recorder?.mimeType || recorderMimeTypeRef.current || 'audio/webm';
+  }
+
   useEffect(() => {
     const onScroll = () => {
       const nearBottom = isNearBottom();
@@ -324,7 +329,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
     const chunks = recordedChunksRef.current;
     if (!chunks.length) return;
 
-    const mimeType = mediaRecorderRef.current?.mimeType || 'audio/webm';
+    const mimeType = resolveRecordingMimeType(mediaRecorderRef.current, chunks);
     const audioBlob = new Blob(chunks, { type: mimeType });
     if (audioBlob.size < 2500) return;
 
@@ -355,11 +360,11 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorderOptions = getRecorderOptions();
-      const requestedMimeType = recorderOptions?.mimeType || 'audio/webm';
+      const requestedMimeType = recorderOptions?.mimeType || '';
       const recorder = new MediaRecorder(stream, recorderOptions);
       mediaStreamRef.current = stream;
       mediaRecorderRef.current = recorder;
-      recorderMimeTypeRef.current = recorder.mimeType || requestedMimeType;
+      recorderMimeTypeRef.current = recorder.mimeType || requestedMimeType || '';
       recordedChunksRef.current = [];
       autoStopReasonRef.current = 'manual';
       setVoiceInfo('');
@@ -371,7 +376,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       };
       recorder.onstop = async () => {
         const chunks = recordedChunksRef.current;
-        const mimeType = recorder.mimeType || recorderMimeTypeRef.current || 'audio/webm';
+        const mimeType = resolveRecordingMimeType(recorder, chunks);
         const stopReason = autoStopReasonRef.current || 'unknown';
         stopLivePreviewRecognition();
         stopAutoStopWatchers();
