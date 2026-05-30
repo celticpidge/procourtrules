@@ -14,6 +14,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
   const [voiceError, setVoiceError] = useState('');
   const [voiceInfo, setVoiceInfo] = useState('');
   const [isVoiceRecordingFallback, setIsVoiceRecordingFallback] = useState(false);
+  const [voiceRearmAt, setVoiceRearmAt] = useState(0);
   const [showJumpToLatest, setShowJumpToLatest] = useState(false);
   const messagesEndRef = useRef(null);
   const messageAnchorRefs = useRef(new Map());
@@ -39,6 +40,8 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
   const hasDetectedSpeechRef = useRef(false);
   const autoStopTimeoutRef = useRef(null);
   const autoStopReasonRef = useRef('unknown');
+  const voiceRearmTimeoutRef = useRef(null);
+  const voiceRearmFailureCountRef = useRef(0);
   const voiceSessionStartAtRef = useRef(0);
   const firstTextLoggedRef = useRef(false);
   const sessionModeRef = useRef('');
@@ -120,6 +123,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
     suppressVoicePopulateRef.current = false;
     setIsVoiceFinalizing(false);
     setHasVoiceDraft(false);
+    clearVoiceRearmGate();
     progressivePreviewEnabledRef.current = false;
     previewTranscriptionInFlightRef.current = false;
     previewTranscriptionLastAtRef.current = 0;
@@ -153,6 +157,11 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       }
     }
     return { audioBitsPerSecond: AUDIO_BITRATE };
+  }
+
+  function isIOSLikeBrowser() {
+    const ua = navigator.userAgent || '';
+    return /iPhone|iPad|iPod/i.test(ua) || (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1);
   }
 
   function resolveRecordingMimeType(recorder, chunks) {
@@ -223,6 +232,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       if (silenceIntervalRef.current) { clearInterval(silenceIntervalRef.current); silenceIntervalRef.current = null; }
       if (autoStopTimeoutRef.current) { clearTimeout(autoStopTimeoutRef.current); autoStopTimeoutRef.current = null; }
       if (livePreviewStartupTimeoutRef.current) { clearTimeout(livePreviewStartupTimeoutRef.current); livePreviewStartupTimeoutRef.current = null; }
+      if (voiceRearmTimeoutRef.current) { clearTimeout(voiceRearmTimeoutRef.current); voiceRearmTimeoutRef.current = null; }
       if (growRafRef.current) { cancelAnimationFrame(growRafRef.current); growRafRef.current = null; }
       audioContextRef.current?.close();
       audioContextRef.current = null;
@@ -246,10 +256,79 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
     audioContextRef.current = null;
   }
 
+  function clearVoiceRearmGate() {
+    if (voiceRearmTimeoutRef.current) {
+      clearTimeout(voiceRearmTimeoutRef.current);
+      voiceRearmTimeoutRef.current = null;
+    }
+    setVoiceRearmAt(0);
+  }
+
+  function scheduleVoiceRearmGate(reason = 'success') {
+    if (!isIOSLikeBrowser()) return;
+
+    const baseDelays = {
+      success: 1200,
+      submitted: 1200,
+      manual: 1200,
+      silence: 3500,
+      no_speech: 4500,
+      recording_failed: 4000,
+      no_results: 2800,
+      startup_timeout: 2200,
+    };
+
+    const baseDelay = baseDelays[reason] ?? 1800;
+    const failureBonus = reason === 'success'
+      ? 0
+      : Math.min(voiceRearmFailureCountRef.current * 750, 3500);
+
+    if (reason === 'success') {
+      voiceRearmFailureCountRef.current = 0;
+    } else {
+      voiceRearmFailureCountRef.current += 1;
+    }
+
+    const delay = baseDelay + failureBonus;
+    clearVoiceRearmGate();
+    setVoiceRearmAt(Date.now() + delay);
+    voiceRearmTimeoutRef.current = setTimeout(() => {
+      voiceRearmTimeoutRef.current = null;
+      setVoiceRearmAt(0);
+    }, delay);
+  }
+
+  function releaseVoiceSessionResources() {
+    stopLivePreviewRecognition();
+    stopAutoStopWatchers();
+    if (mediaRecorderRef.current?.state === 'recording') {
+      try {
+        mediaRecorderRef.current.stop();
+      } catch {
+        // Ignore stop failures during cleanup.
+      }
+    }
+    mediaRecorderRef.current = null;
+    mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
+    mediaStreamRef.current = null;
+    recognitionRef.current?.stop();
+    recognitionRef.current = null;
+    setIsVoiceListening(false);
+    setIsVoiceRecordingFallback(false);
+  }
+
+  function flushAndStopRecorder(reason = 'manual') {
+    const recorder = mediaRecorderRef.current;
+    if (!recorder || recorder.state !== 'recording') return;
+    autoStopReasonRef.current = reason;
+    try { recorder.requestData?.(); } catch { /* best-effort flush for WebKit */ }
+    recorder.stop();
+  }
+
   function beginAutoStopWatchers(stream, recorder) {
     stopAutoStopWatchers();
     autoStopTimeoutRef.current = setTimeout(() => {
-      if (recorder.state === 'recording') { autoStopReasonRef.current = 'max_duration'; recorder.stop(); }
+      if (recorder.state === 'recording') flushAndStopRecorder('max_duration');
     }, MAX_RECORDING_MS);
 
     const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
@@ -273,12 +352,13 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
         if (rms > SILENCE_THRESHOLD) { hasDetectedSpeechRef.current = true; silenceMsRef.current = 0; return; }
         if (!hasDetectedSpeechRef.current) return;
         silenceMsRef.current += CHECK_INTERVAL_MS;
-        if (silenceMsRef.current >= SILENCE_MS_TO_STOP) { autoStopReasonRef.current = 'silence'; recorder.stop(); }
+        if (silenceMsRef.current >= SILENCE_MS_TO_STOP) flushAndStopRecorder('silence');
       }, CHECK_INTERVAL_MS);
     } catch { /* silence detection unavailable, max-duration still protects */ }
   }
 
   function startLivePreviewRecognition() {
+    if (isIOSLikeBrowser()) return;
     if (!speechSupported) return;
     const SpeechRecognitionCtor = getSpeechRecognitionCtor();
     if (!SpeechRecognitionCtor) return;
@@ -372,8 +452,10 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
 
   async function startRecorderTranscription() {
     if (!recorderSupported) { setVoiceError('Voice recording is not available in this browser.'); return false; }
+    let stream = null;
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      releaseVoiceSessionResources();
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorderOptions = getRecorderOptions();
       const requestedMimeType = recorderOptions?.mimeType || '';
       const recorder = new MediaRecorder(stream, recorderOptions);
@@ -393,6 +475,18 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
         const chunks = recordedChunksRef.current;
         const mimeType = resolveRecordingMimeType(recorder, chunks);
         const stopReason = autoStopReasonRef.current || 'unknown';
+        const totalBytes = chunks.reduce((sum, chunk) => sum + (chunk?.size || 0), 0);
+        // Diagnostic snapshot to disambiguate empty-recording vs empty-transcript failures.
+        const recordingDiagnostics = {
+          mode: sessionModeRef.current,
+          stop_reason: stopReason,
+          chunk_count: chunks.length,
+          total_bytes: totalBytes,
+          mime_type: mimeType || 'unknown',
+          ios_like: isIOSLikeBrowser(),
+          session_ms: voiceSessionStartAtRef.current ? Date.now() - voiceSessionStartAtRef.current : 0,
+        };
+        console.info('[voice] recorder stopped', recordingDiagnostics);
         stopLivePreviewRecognition();
         stopAutoStopWatchers();
         mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
@@ -404,18 +498,32 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
         if (stopReason === 'submitted' || suppressVoicePopulateRef.current) {
           setIsVoiceFinalizing(false);
           setHasVoiceDraft(false);
+          scheduleVoiceRearmGate('submitted');
           return;
         }
         if (stopReason === 'max_duration') {
           setVoiceInfo('Recording auto-stopped at 45 seconds. For best accuracy, speak in shorter clips.');
         }
-        if (!chunks.length) { setIsVoiceFinalizing(false); setVoiceError('No speech detected. Try again and speak clearly.'); return; }
+        if (!chunks.length) {
+          setIsVoiceFinalizing(false);
+          console.warn('[voice] no audio captured (empty recording)', recordingDiagnostics);
+          trackTelemetry('voice_no_speech', { ...recordingDiagnostics, reason: 'empty_recording' });
+          setVoiceError('No speech detected. Try again and speak clearly.');
+          scheduleVoiceRearmGate('no_speech');
+          return;
+        }
         setIsVoiceFinalizing(true);
         try {
           const audioBlob = new Blob(chunks, { type: mimeType });
           const transcript = (await sendTranscription(audioBlob)).trim();
           if (suppressVoicePopulateRef.current) return;
-          if (!transcript) { setVoiceError('No speech detected. Try again and speak clearly.'); return; }
+          if (!transcript) {
+            console.warn('[voice] audio sent but transcript was empty', { ...recordingDiagnostics, blob_bytes: audioBlob.size });
+            trackTelemetry('voice_no_speech', { ...recordingDiagnostics, blob_bytes: audioBlob.size, reason: 'empty_transcript' });
+            setVoiceError('No speech detected. Try again and speak clearly.');
+            scheduleVoiceRearmGate('no_speech');
+            return;
+          }
           const baseText = inputBeforeVoiceRef.current;
           const nextValue = baseText ? `${baseText} ${transcript}` : transcript;
           setInput(nextValue);
@@ -428,26 +536,24 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
             text_chars: transcript.length,
           });
           setVoiceError('');
+          scheduleVoiceRearmGate('success');
           inputRef.current?.focus();
         } catch (err) {
           trackTelemetry('voice_transcribe_error', { mode: sessionModeRef.current, stage: 'final', code: classifyTranscriptionError(err?.message || '') });
           setVoiceError(err.message || 'Audio transcription failed. Please try again.');
+          scheduleVoiceRearmGate('recording_failed');
         } finally {
           setIsVoiceFinalizing(false);
         }
       };
       recorder.onerror = () => {
-        stopLivePreviewRecognition();
-        stopAutoStopWatchers();
-        mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
-        mediaStreamRef.current = null;
-        mediaRecorderRef.current = null;
-        setIsVoiceListening(false);
-        setIsVoiceRecordingFallback(false);
+        releaseVoiceSessionResources();
         setIsVoiceFinalizing(false);
         setVoiceError('Audio recording failed. Please try again.');
+        scheduleVoiceRearmGate('recording_failed');
       };
-      recorder.start(RECORDER_TIMESLICE_MS);
+      const recorderTimeslice = isIOSLikeBrowser() ? undefined : RECORDER_TIMESLICE_MS;
+      recorder.start(recorderTimeslice);
       startVoiceSession('recorder');
       // If browser speech preview is unavailable (common on mobile),
       // enable recorder-based live updates right away.
@@ -460,7 +566,11 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       setIsVoiceListening(true);
       setIsVoiceRecordingFallback(true);
       return true;
-    } catch { setVoiceError('Unable to access microphone for voice recording.'); return false; }
+    } catch {
+      stream?.getTracks().forEach((track) => track.stop());
+      setVoiceError('Unable to access microphone for voice recording.');
+      return false;
+    }
   }
 
   function startSpeechRecognitionFallback() {
@@ -520,13 +630,9 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
     livePreviewFinalTranscriptRef.current = '';
     finalTranscriptRef.current = '';
     if (isVoiceRecordingFallback && mediaRecorderRef.current?.state === 'recording') {
-      autoStopReasonRef.current = 'submitted';
-      mediaRecorderRef.current.stop();
+      flushAndStopRecorder('submitted');
     }
-    recognitionRef.current?.stop();
-    stopLivePreviewRecognition();
-    setIsVoiceListening(false);
-    setIsVoiceRecordingFallback(false);
+    releaseVoiceSessionResources();
   }
 
   function handleChange(e) {
@@ -572,10 +678,10 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
 
   async function handleVoiceToggle() {
     if (isLoading || !voiceSupported) return;
+    if (voiceRearmAt && Date.now() < voiceRearmAt) return;
     if (isVoiceListening) {
       if (isVoiceRecordingFallback && mediaRecorderRef.current?.state === 'recording') {
-        autoStopReasonRef.current = 'manual';
-        mediaRecorderRef.current.stop();
+        flushAndStopRecorder('manual');
         return;
       }
       recognitionRef.current?.stop();
@@ -601,6 +707,8 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       ? { type: 'note', text: 'Finalizing transcript...' }
     : voiceInfo
       ? { type: 'note', text: voiceInfo }
+      : (voiceRearmAt && Date.now() < voiceRearmAt)
+        ? { type: 'note', text: 'Mic is rearming. Please wait a moment before speaking again.' }
       : (!voiceSupported
         ? { type: 'note', text: 'Voice input is not supported in this browser.' }
         : (isVoiceListening
@@ -684,14 +792,16 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
         />
         <button
           type="button"
-          className={`chat-voice ${isVoiceListening ? 'chat-voice-listening' : ''}`}
+          className={`chat-voice ${isVoiceListening ? 'chat-voice-listening' : ''} ${(voiceRearmAt && Date.now() < voiceRearmAt) ? 'chat-voice-rearming' : ''}`}
           onClick={handleVoiceToggle}
-          disabled={isLoading || !voiceSupported}
+          disabled={isLoading || !voiceSupported || isVoiceFinalizing || (voiceRearmAt && Date.now() < voiceRearmAt)}
           aria-label={isVoiceListening ? 'Stop voice input' : 'Start voice input'}
           aria-pressed={isVoiceListening}
           title={
             !voiceSupported
               ? 'Voice input is not supported in this browser'
+              : (voiceRearmAt && Date.now() < voiceRearmAt)
+                ? 'Mic is rearming. Please wait a moment.'
               : isVoiceListening
                 ? (isVoiceRecordingFallback ? 'Recording voice...' : 'Listening...')
                 : 'Start voice input'
