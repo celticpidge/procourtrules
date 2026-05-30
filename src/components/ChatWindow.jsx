@@ -419,8 +419,11 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       if (event.error === 'no-speech') { setVoiceError('No speech detected. Try again and speak clearly.'); return; }
       if (event.error === 'network') {
         if (!navigator.onLine) { setVoiceError('You appear to be offline. Reconnect to the internet and try voice input again.'); return; }
-        if (isElectronBrowser) { setVoiceError('Speech recognition network service is unavailable in the VS Code embedded browser. Open this app in Chrome or Edge and try again.'); return; }
-        setVoiceError('Speech recognition service is unreachable. Try disabling VPN/ad blocker/firewall, then retry.');
+        if (isElectronBrowser) {
+          setVoiceInfo('Voice input is limited in the VS Code embedded browser. Open this app in Chrome or Edge for best results.');
+          return;
+        }
+        setVoiceInfo('Voice input is temporarily unavailable. Please try again.');
         return;
       }
       if (event.error === 'aborted') return;
@@ -505,10 +508,10 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
     setVoiceError('');
     setVoiceInfo('');
     inputBeforeVoiceRef.current = input.trim();
-    const speechStarted = startSpeechRecognitionFallback();
-    if (speechStarted) return;
     const recorderStarted = await startRecorderTranscription();
     if (recorderStarted) return;
+    const speechStarted = startSpeechRecognitionFallback();
+    if (speechStarted) return;
     if (!recorderSupported && !speechSupported) { setVoiceError('Voice input is not supported in this browser.'); return; }
     setVoiceError('Voice input failed to start. Check microphone permissions and try again.');
   }
