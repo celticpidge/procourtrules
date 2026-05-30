@@ -72,6 +72,7 @@ procourtrules/
 ├── extract-pdfs.cjs            # Extract PDF text to JSON
 ├── generate-cached-answers.mjs # Refresh first-turn cached answers
 ├── run-evals.cjs               # Run retrieval and answer evals
+├── run-evals-subset.cjs        # Run focused eval subsets quickly
 ├── vercel.json                 # Vercel deployment config
 └── vite.config.js              # Vite + PWA + Vitest config
 ```
@@ -105,9 +106,12 @@ npm run build            # Production build
 npm run test             # Run all tests
 npm run test:watch       # Run tests in watch mode
 npm run build:embeddings # Rebuild embeddings from source JSON files
+npm run evals            # Run full eval runner (same as node run-evals.cjs)
+npm run evals:subset     # Run official subset eval runner
 node extract-pdfs.cjs    # Extract raw text from PDFs into src/data/
-node run-evals.cjs       # Run retrieval evals against embeddings.json
 ```
+
+Subset eval cases are maintained in `evals/cases-subset.json`.
 
 ### Data Pipeline
 

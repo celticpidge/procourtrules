@@ -5,3 +5,4 @@ dist/
 *.log
 pdf-sources/
 evals/results/
+.vercel/
