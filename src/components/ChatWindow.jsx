@@ -508,12 +508,10 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
     setVoiceError('');
     setVoiceInfo('');
     inputBeforeVoiceRef.current = input.trim();
-    const recorderStarted = await startRecorderTranscription();
-    if (recorderStarted) return;
     const speechStarted = startSpeechRecognitionFallback();
     if (speechStarted) return;
-    if (!recorderSupported && !speechSupported) { setVoiceError('Voice input is not supported in this browser.'); return; }
-    setVoiceError('Voice input failed to start. Check microphone permissions and try again.');
+    if (!speechSupported) { setVoiceError('Live voice dictation is not supported in this browser. Please use Chrome or Edge.'); return; }
+    setVoiceError('Live voice dictation failed to start. Please try again.');
   }
 
   const voiceStatus = voiceError
