@@ -22,6 +22,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
   const mediaRecorderRef = useRef(null);
   const mediaStreamRef = useRef(null);
   const recordedChunksRef = useRef([]);
+  const recorderMimeTypeRef = useRef('audio/webm');
   const inputBeforeVoiceRef = useRef('');
   const finalTranscriptRef = useRef('');
   const livePreviewRecognitionRef = useRef(null);
@@ -353,9 +354,12 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
     if (!recorderSupported) { setVoiceError('Voice recording is not available in this browser.'); return false; }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream, getRecorderOptions());
+      const recorderOptions = getRecorderOptions();
+      const requestedMimeType = recorderOptions?.mimeType || 'audio/webm';
+      const recorder = new MediaRecorder(stream, recorderOptions);
       mediaStreamRef.current = stream;
       mediaRecorderRef.current = recorder;
+      recorderMimeTypeRef.current = recorder.mimeType || requestedMimeType;
       recordedChunksRef.current = [];
       autoStopReasonRef.current = 'manual';
       setVoiceInfo('');
@@ -367,7 +371,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       };
       recorder.onstop = async () => {
         const chunks = recordedChunksRef.current;
-        const mimeType = recorder.mimeType || 'audio/webm';
+        const mimeType = recorder.mimeType || recorderMimeTypeRef.current || 'audio/webm';
         const stopReason = autoStopReasonRef.current || 'unknown';
         stopLivePreviewRecognition();
         stopAutoStopWatchers();
