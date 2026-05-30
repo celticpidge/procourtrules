@@ -15,6 +15,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
   const [voiceInfo, setVoiceInfo] = useState('');
   const [isVoiceRecordingFallback, setIsVoiceRecordingFallback] = useState(false);
   const [voiceRearmAt, setVoiceRearmAt] = useState(0);
+  const [voiceDebug, setVoiceDebug] = useState('');
   const [showJumpToLatest, setShowJumpToLatest] = useState(false);
   const messagesEndRef = useRef(null);
   const messageAnchorRefs = useRef(new Map());
@@ -465,6 +466,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       recordedChunksRef.current = [];
       autoStopReasonRef.current = 'manual';
       setVoiceInfo('');
+      setVoiceDebug('');
       recorder.ondataavailable = async (event) => {
         if (event.data && event.data.size > 0) {
           recordedChunksRef.current.push(event.data);
@@ -487,6 +489,9 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
           session_ms: voiceSessionStartAtRef.current ? Date.now() - voiceSessionStartAtRef.current : 0,
         };
         console.info('[voice] recorder stopped', recordingDiagnostics);
+        setVoiceDebug(
+          `stop=${stopReason} chunks=${chunks.length} bytes=${totalBytes} mime=${mimeType || 'unknown'} ios=${recordingDiagnostics.ios_like} ms=${recordingDiagnostics.session_ms}`,
+        );
         stopLivePreviewRecognition();
         stopAutoStopWatchers();
         mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
@@ -519,6 +524,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
           if (suppressVoicePopulateRef.current) return;
           if (!transcript) {
             console.warn('[voice] audio sent but transcript was empty', { ...recordingDiagnostics, blob_bytes: audioBlob.size });
+            setVoiceDebug((prev) => `${prev} | empty_transcript blob=${audioBlob.size}`);
             trackTelemetry('voice_no_speech', { ...recordingDiagnostics, blob_bytes: audioBlob.size, reason: 'empty_transcript' });
             setVoiceError('No speech detected. Try again and speak clearly.');
             scheduleVoiceRearmGate('no_speech');
@@ -774,6 +780,11 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
         {voiceStatus && (
           <div className={voiceStatus.type === 'error' ? 'chat-voice-error' : 'chat-voice-note'} role={voiceStatus.type === 'error' ? 'alert' : 'status'}>
             {voiceStatus.text}
+          </div>
+        )}
+        {voiceDebug && (
+          <div className="chat-voice-note" role="status" style={{ fontFamily: 'monospace', fontSize: '11px', opacity: 0.75, wordBreak: 'break-all' }}>
+            debug: {voiceDebug}
           </div>
         )}
       </div>
