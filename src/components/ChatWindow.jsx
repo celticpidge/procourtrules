@@ -420,16 +420,6 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       if (event.error === 'network') {
         if (!navigator.onLine) { setVoiceError('You appear to be offline. Reconnect to the internet and try voice input again.'); return; }
         if (isElectronBrowser) { setVoiceError('Speech recognition network service is unavailable in the VS Code embedded browser. Open this app in Chrome or Edge and try again.'); return; }
-        if (recorderSupported) {
-          setVoiceInfo('Speech service unavailable. Switching to recorder mode...');
-          void (async () => {
-            const started = await startRecorderTranscription();
-            if (!started) {
-              setVoiceError('Speech recognition service is unreachable. Try disabling VPN/ad blocker/firewall, then retry.');
-            }
-          })();
-          return;
-        }
         setVoiceError('Speech recognition service is unreachable. Try disabling VPN/ad blocker/firewall, then retry.');
         return;
       }
