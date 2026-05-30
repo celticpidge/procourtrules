@@ -58,6 +58,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
   const MAX_RECORDING_MS = 45000;
   const AUTO_SCROLL_THRESHOLD_PX = 140;
   const RECORDER_TIMESLICE_MS = 450;
+  const IOS_RECORDER_TIMESLICE_MS = 1000;
   const AUDIO_BITRATE = 24000;
   const INPUT_MAX_HEIGHT_PX = 220;
 
@@ -558,7 +559,12 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
         setVoiceError('Audio recording failed. Please try again.');
         scheduleVoiceRearmGate('recording_failed');
       };
-      const recorderTimeslice = isIOSLikeBrowser() ? undefined : RECORDER_TIMESLICE_MS;
+      // iOS WebKit only emits a final blob on stop() when started with no
+      // timeslice, and that early-stop emit is frequently empty for mp4/AAC.
+      // Passing a timeslice forces periodic dataavailable events so chunks
+      // accumulate; the final blob is rebuilt from all chunks. Progressive
+      // upload of partial mp4 stays disabled via supportsProgressivePreview.
+      const recorderTimeslice = isIOSLikeBrowser() ? IOS_RECORDER_TIMESLICE_MS : RECORDER_TIMESLICE_MS;
       recorder.start(recorderTimeslice);
       startVoiceSession('recorder');
       // If browser speech preview is unavailable (common on mobile),
