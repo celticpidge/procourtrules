@@ -171,11 +171,13 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
     return firstChunkWithType?.type || recorder?.mimeType || recorderMimeTypeRef.current || '';
   }
 
-  function supportsProgressivePreviewForMimeType(mimeType = '') {
-    // Progressive uploads of in-progress MP4/M4A blobs are unstable on iOS/WebKit.
-    // Prefer final-on-stop transcription for these containers.
-    if (!mimeType) return true;
-    return !mimeType.includes('mp4') && !mimeType.includes('m4a');
+  function supportsProgressivePreviewForMimeType() {
+    // With a recorder timeslice, MediaRecorder emits fragmented MP4 where the
+    // first chunk carries the init segment, so the accumulated blob (always
+    // built from chunk 0) is a decodable fMP4 stream. Progressive uploads of
+    // these growing blobs are therefore supported across containers, including
+    // iOS/WebKit, enabling near real-time previews.
+    return true;
   }
 
   useEffect(() => {
@@ -562,14 +564,14 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       // iOS WebKit only emits a final blob on stop() when started with no
       // timeslice, and that early-stop emit is frequently empty for mp4/AAC.
       // Passing a timeslice forces periodic dataavailable events so chunks
-      // accumulate; the final blob is rebuilt from all chunks. Progressive
-      // upload of partial mp4 stays disabled via supportsProgressivePreview.
+      // accumulate; the final blob is rebuilt from all chunks. The same
+      // fragmented-mp4 chunks also power near real-time progressive previews.
       const recorderTimeslice = isIOSLikeBrowser() ? IOS_RECORDER_TIMESLICE_MS : RECORDER_TIMESLICE_MS;
       recorder.start(recorderTimeslice);
       startVoiceSession('recorder');
-      // If browser speech preview is unavailable (common on mobile),
-      // enable recorder-based live updates right away.
-      if (!speechSupported) {
+      // Browser speech preview is unavailable on iOS (mic conflicts with the
+      // recorder), so drive live updates from recorder chunks instead.
+      if (!speechSupported || isIOSLikeBrowser()) {
         const initialMimeType = recorder.mimeType || recorderMimeTypeRef.current || '';
         progressivePreviewEnabledRef.current = supportsProgressivePreviewForMimeType(initialMimeType);
       }
