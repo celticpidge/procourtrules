@@ -28,6 +28,10 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
   const livePreviewStartupTimeoutRef = useRef(null);
   const livePreviewFinalTranscriptRef = useRef('');
   const livePreviewHasResultsRef = useRef(false);
+  const progressivePreviewEnabledRef = useRef(false);
+  const previewTranscriptionInFlightRef = useRef(false);
+  const previewTranscriptionLastAtRef = useRef(0);
+  const progressiveErrorLoggedRef = useRef(false);
   const audioContextRef = useRef(null);
   const silenceIntervalRef = useRef(null);
   const silenceMsRef = useRef(0);
@@ -115,6 +119,10 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
     suppressVoicePopulateRef.current = false;
     setIsVoiceFinalizing(false);
     setHasVoiceDraft(false);
+    progressivePreviewEnabledRef.current = false;
+    previewTranscriptionInFlightRef.current = false;
+    previewTranscriptionLastAtRef.current = 0;
+    progressiveErrorLoggedRef.current = false;
     sessionModeRef.current = mode;
     voiceSessionStartAtRef.current = Date.now();
     firstTextLoggedRef.current = false;
@@ -282,12 +290,14 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       };
       recognition.onerror = () => {
         trackTelemetry('voice_live_preview_failed', { mode: sessionModeRef.current, reason: 'speech_error' });
+        progressivePreviewEnabledRef.current = true;
         if (livePreviewRecognitionRef.current === recognition) livePreviewRecognitionRef.current = null;
       };
       recognition.onend = () => {
         if (livePreviewStartupTimeoutRef.current) { clearTimeout(livePreviewStartupTimeoutRef.current); livePreviewStartupTimeoutRef.current = null; }
         if (!livePreviewHasResultsRef.current) {
           trackTelemetry('voice_live_preview_failed', { mode: sessionModeRef.current, reason: 'no_results' });
+          progressivePreviewEnabledRef.current = true;
         }
         if (livePreviewRecognitionRef.current === recognition) livePreviewRecognitionRef.current = null;
       };
@@ -297,8 +307,46 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       livePreviewStartupTimeoutRef.current = setTimeout(() => {
         if (livePreviewHasResultsRef.current || suppressVoicePopulateRef.current) return;
         trackTelemetry('voice_live_preview_failed', { mode: sessionModeRef.current, reason: 'startup_timeout' });
+        progressivePreviewEnabledRef.current = true;
       }, 1200);
     } catch { livePreviewRecognitionRef.current = null; }
+  }
+
+  async function updateProgressiveTranscript() {
+    if (!progressivePreviewEnabledRef.current) return;
+    if (suppressVoicePopulateRef.current) return;
+    if (previewTranscriptionInFlightRef.current) return;
+
+    const now = Date.now();
+    if (now - previewTranscriptionLastAtRef.current < 1200) return;
+
+    const chunks = recordedChunksRef.current;
+    if (!chunks.length) return;
+
+    const mimeType = mediaRecorderRef.current?.mimeType || 'audio/webm';
+    const audioBlob = new Blob(chunks, { type: mimeType });
+    if (audioBlob.size < 2500) return;
+
+    previewTranscriptionInFlightRef.current = true;
+    previewTranscriptionLastAtRef.current = now;
+
+    try {
+      const transcript = (await sendTranscription(audioBlob)).trim();
+      if (!transcript || suppressVoicePopulateRef.current) return;
+      const baseText = inputBeforeVoiceRef.current;
+      const nextValue = baseText ? `${baseText} ${transcript}` : transcript;
+      setInput(nextValue);
+      setHasVoiceDraft(true);
+      queueGrowTextarea();
+      trackFirstText('progressive_transcription');
+    } catch {
+      if (!progressiveErrorLoggedRef.current) {
+        progressiveErrorLoggedRef.current = true;
+        trackTelemetry('voice_transcribe_error', { mode: sessionModeRef.current, stage: 'progressive', code: 'progressive_failed' });
+      }
+    } finally {
+      previewTranscriptionInFlightRef.current = false;
+    }
   }
 
   async function startRecorderTranscription() {
@@ -311,9 +359,10 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       recordedChunksRef.current = [];
       autoStopReasonRef.current = 'manual';
       setVoiceInfo('');
-      recorder.ondataavailable = (event) => {
+      recorder.ondataavailable = async (event) => {
         if (event.data && event.data.size > 0) {
           recordedChunksRef.current.push(event.data);
+          await updateProgressiveTranscript();
         }
       };
       recorder.onstop = async () => {
@@ -508,10 +557,12 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
     setVoiceError('');
     setVoiceInfo('');
     inputBeforeVoiceRef.current = input.trim();
+    const recorderStarted = await startRecorderTranscription();
+    if (recorderStarted) return;
     const speechStarted = startSpeechRecognitionFallback();
     if (speechStarted) return;
-    if (!speechSupported) { setVoiceError('Live voice dictation is not supported in this browser. Please use Chrome or Edge.'); return; }
-    setVoiceError('Live voice dictation failed to start. Please try again.');
+    if (!recorderSupported && !speechSupported) { setVoiceError('Voice input is not supported in this browser.'); return; }
+    setVoiceError('Voice input failed to start. Check microphone permissions and try again.');
   }
 
   const voiceStatus = voiceError
