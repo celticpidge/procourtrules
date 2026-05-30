@@ -141,7 +141,12 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
   }
 
   function getRecorderOptions() {
-    const preferredTypes = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4'];
+    const ua = navigator.userAgent || '';
+    const isIOSLike = /iPhone|iPad|iPod/i.test(ua)
+      || (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1);
+    const preferredTypes = isIOSLike
+      ? ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm']
+      : ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4'];
     for (const type of preferredTypes) {
       if (MediaRecorder.isTypeSupported?.(type)) {
         return { mimeType: type, audioBitsPerSecond: AUDIO_BITRATE };
