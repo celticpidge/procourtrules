@@ -84,8 +84,8 @@ export async function handleTranscribeRequest(req, res) {
 
   try {
     const candidateModels = [
-      process.env.TRANSCRIPTION_MODEL || 'gpt-4o-mini-transcribe',
       'whisper-1',
+      process.env.TRANSCRIPTION_MODEL || 'gpt-4o-mini-transcribe',
     ];
 
     let lastStatus = null;
@@ -117,17 +117,21 @@ export async function handleTranscribeRequest(req, res) {
       lastStatusText = response.statusText;
       lastErrorBody = errorBody;
 
-      // Only fall through to the next model for compatibility-style failures.
-      const isCompatibilityFailure = response.status === 400 || response.status === 404;
+      // Fall through for model/media compatibility-style failures.
+      const isCompatibilityFailure = [400, 404, 415, 422].includes(response.status);
       if (!isCompatibilityFailure) {
         break;
       }
     }
 
     console.error(`OpenAI transcription error: ${lastStatus} ${lastStatusText}`, lastErrorBody);
-    return res.status(502).json({ error: 'Transcription service returned an error.' });
+    const statusCode = Number.isInteger(lastStatus) ? lastStatus : 'unknown';
+    return res.status(502).json({
+      error: 'Transcription service returned an error.',
+      code: `openai_${statusCode}_${ext}`,
+    });
   } catch {
-    return res.status(502).json({ error: 'Transcription service is unavailable.' });
+    return res.status(502).json({ error: 'Transcription service is unavailable.', code: 'openai_unreachable' });
   }
 }
 

@@ -160,6 +160,13 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
     return firstChunkWithType?.type || recorder?.mimeType || recorderMimeTypeRef.current || '';
   }
 
+  function supportsProgressivePreviewForMimeType(mimeType = '') {
+    // Progressive uploads of in-progress MP4/M4A blobs are unstable on iOS/WebKit.
+    // Prefer final-on-stop transcription for these containers.
+    if (!mimeType) return true;
+    return !mimeType.includes('mp4') && !mimeType.includes('m4a');
+  }
+
   useEffect(() => {
     const onScroll = () => {
       const nearBottom = isNearBottom();
@@ -301,14 +308,16 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       };
       recognition.onerror = () => {
         trackTelemetry('voice_live_preview_failed', { mode: sessionModeRef.current, reason: 'speech_error' });
-        progressivePreviewEnabledRef.current = true;
+        const mimeType = resolveRecordingMimeType(mediaRecorderRef.current, recordedChunksRef.current);
+        progressivePreviewEnabledRef.current = supportsProgressivePreviewForMimeType(mimeType);
         if (livePreviewRecognitionRef.current === recognition) livePreviewRecognitionRef.current = null;
       };
       recognition.onend = () => {
         if (livePreviewStartupTimeoutRef.current) { clearTimeout(livePreviewStartupTimeoutRef.current); livePreviewStartupTimeoutRef.current = null; }
         if (!livePreviewHasResultsRef.current) {
           trackTelemetry('voice_live_preview_failed', { mode: sessionModeRef.current, reason: 'no_results' });
-          progressivePreviewEnabledRef.current = true;
+          const mimeType = resolveRecordingMimeType(mediaRecorderRef.current, recordedChunksRef.current);
+          progressivePreviewEnabledRef.current = supportsProgressivePreviewForMimeType(mimeType);
         }
         if (livePreviewRecognitionRef.current === recognition) livePreviewRecognitionRef.current = null;
       };
@@ -318,7 +327,8 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       livePreviewStartupTimeoutRef.current = setTimeout(() => {
         if (livePreviewHasResultsRef.current || suppressVoicePopulateRef.current) return;
         trackTelemetry('voice_live_preview_failed', { mode: sessionModeRef.current, reason: 'startup_timeout' });
-        progressivePreviewEnabledRef.current = true;
+        const mimeType = resolveRecordingMimeType(mediaRecorderRef.current, recordedChunksRef.current);
+        progressivePreviewEnabledRef.current = supportsProgressivePreviewForMimeType(mimeType);
       }, 1200);
     } catch { livePreviewRecognitionRef.current = null; }
   }
@@ -442,7 +452,8 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       // If browser speech preview is unavailable (common on mobile),
       // enable recorder-based live updates right away.
       if (!speechSupported) {
-        progressivePreviewEnabledRef.current = true;
+        const initialMimeType = recorder.mimeType || recorderMimeTypeRef.current || '';
+        progressivePreviewEnabledRef.current = supportsProgressivePreviewForMimeType(initialMimeType);
       }
       startLivePreviewRecognition();
       beginAutoStopWatchers(stream, recorder);

@@ -110,8 +110,9 @@ async function postTranscriptionRequest(payload) {
   }
 
   if (!response.ok) {
+    const detail = data?.code ? ` [${data.code}]` : '';
     throw createRetryableTranscriptionError(
-      data.error || 'Transcription failed.',
+      `${data.error || 'Transcription failed.'}${detail}`,
       {
         retryable: RETRYABLE_TRANSCRIPTION_STATUS_CODES.has(response.status),
         status: response.status,
