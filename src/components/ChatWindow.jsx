@@ -22,7 +22,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
   const mediaRecorderRef = useRef(null);
   const mediaStreamRef = useRef(null);
   const recordedChunksRef = useRef([]);
-  const recorderMimeTypeRef = useRef('audio/webm');
+  const recorderMimeTypeRef = useRef('');
   const inputBeforeVoiceRef = useRef('');
   const finalTranscriptRef = useRef('');
   const livePreviewRecognitionRef = useRef(null);
@@ -152,7 +152,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
 
   function resolveRecordingMimeType(recorder, chunks) {
     const firstChunkWithType = chunks?.find((chunk) => chunk?.type);
-    return firstChunkWithType?.type || recorder?.mimeType || recorderMimeTypeRef.current || 'audio/webm';
+    return firstChunkWithType?.type || recorder?.mimeType || recorderMimeTypeRef.current || '';
   }
 
   useEffect(() => {

@@ -130,7 +130,7 @@ export async function sendTranscription(audioBlob) {
   const audioBase64 = await blobToBase64(audioBlob);
   const payload = {
     audioBase64,
-    mimeType: audioBlob.type || 'audio/webm',
+    mimeType: audioBlob.type || '',
   };
 
   const maxAttempts = 3;
