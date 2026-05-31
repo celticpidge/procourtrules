@@ -41,6 +41,8 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
   const hasDetectedSpeechRef = useRef(false);
   const autoStopTimeoutRef = useRef(null);
   const autoStopReasonRef = useRef('unknown');
+  const progressivePollIntervalRef = useRef(null);
+  const dataAvailableCountRef = useRef(0);
   const voiceRearmTimeoutRef = useRef(null);
   const voiceRearmFailureCountRef = useRef(0);
   const voiceSessionStartAtRef = useRef(0);
@@ -59,6 +61,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
   const AUTO_SCROLL_THRESHOLD_PX = 140;
   const RECORDER_TIMESLICE_MS = 450;
   const IOS_RECORDER_TIMESLICE_MS = 1000;
+  const PROGRESSIVE_POLL_MS = 900;
   const AUDIO_BITRATE = 24000;
   const INPUT_MAX_HEIGHT_PX = 220;
 
@@ -235,6 +238,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
       if (silenceIntervalRef.current) { clearInterval(silenceIntervalRef.current); silenceIntervalRef.current = null; }
       if (autoStopTimeoutRef.current) { clearTimeout(autoStopTimeoutRef.current); autoStopTimeoutRef.current = null; }
+      if (progressivePollIntervalRef.current) { clearInterval(progressivePollIntervalRef.current); progressivePollIntervalRef.current = null; }
       if (livePreviewStartupTimeoutRef.current) { clearTimeout(livePreviewStartupTimeoutRef.current); livePreviewStartupTimeoutRef.current = null; }
       if (voiceRearmTimeoutRef.current) { clearTimeout(voiceRearmTimeoutRef.current); voiceRearmTimeoutRef.current = null; }
       if (growRafRef.current) { cancelAnimationFrame(growRafRef.current); growRafRef.current = null; }
@@ -258,6 +262,24 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
     hasDetectedSpeechRef.current = false;
     audioContextRef.current?.close();
     audioContextRef.current = null;
+  }
+
+  function stopProgressivePolling() {
+    if (progressivePollIntervalRef.current) {
+      clearInterval(progressivePollIntervalRef.current);
+      progressivePollIntervalRef.current = null;
+    }
+  }
+
+  function startProgressivePolling(recorder) {
+    // iOS Safari frequently delivers a single dataavailable only at stop(),
+    // even when a timeslice is set. Proactively request data on an interval so
+    // chunks arrive during recording and progressive previews can run live.
+    stopProgressivePolling();
+    progressivePollIntervalRef.current = setInterval(() => {
+      if (!recorder || recorder.state !== 'recording') return;
+      try { recorder.requestData?.(); } catch { /* best-effort flush for WebKit */ }
+    }, PROGRESSIVE_POLL_MS);
   }
 
   function clearVoiceRearmGate() {
@@ -305,6 +327,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
   function releaseVoiceSessionResources() {
     stopLivePreviewRecognition();
     stopAutoStopWatchers();
+    stopProgressivePolling();
     if (mediaRecorderRef.current?.state === 'recording') {
       try {
         mediaRecorderRef.current.stop();
@@ -468,11 +491,14 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       recorderMimeTypeRef.current = recorder.mimeType || requestedMimeType || '';
       recordedChunksRef.current = [];
       autoStopReasonRef.current = 'manual';
+      dataAvailableCountRef.current = 0;
       setVoiceInfo('');
       setVoiceDebug('');
       recorder.ondataavailable = async (event) => {
         if (event.data && event.data.size > 0) {
+          dataAvailableCountRef.current += 1;
           recordedChunksRef.current.push(event.data);
+          setVoiceDebug(`live events=${dataAvailableCountRef.current} chunks=${recordedChunksRef.current.length} bytes=${recordedChunksRef.current.reduce((s, c) => s + (c?.size || 0), 0)}`);
           await updateProgressiveTranscript();
         }
       };
@@ -493,8 +519,9 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
         };
         console.info('[voice] recorder stopped', recordingDiagnostics);
         setVoiceDebug(
-          `stop=${stopReason} chunks=${chunks.length} bytes=${totalBytes} mime=${mimeType || 'unknown'} ios=${recordingDiagnostics.ios_like} ms=${recordingDiagnostics.session_ms}`,
+          `stop=${stopReason} events=${dataAvailableCountRef.current} chunks=${chunks.length} bytes=${totalBytes} mime=${mimeType || 'unknown'} ios=${recordingDiagnostics.ios_like} ms=${recordingDiagnostics.session_ms}`,
         );
+        stopProgressivePolling();
         stopLivePreviewRecognition();
         stopAutoStopWatchers();
         mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
@@ -577,6 +604,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       }
       startLivePreviewRecognition();
       beginAutoStopWatchers(stream, recorder);
+      if (progressivePreviewEnabledRef.current) startProgressivePolling(recorder);
       setIsVoiceListening(true);
       setIsVoiceRecordingFallback(true);
       return true;
