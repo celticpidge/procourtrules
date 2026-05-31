@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "build:embeddings": "node build-embeddings.cjs"
+    "build:embeddings": "node build-embeddings.cjs",
+    "evals": "node run-evals.cjs",
+    "evals:subset": "node run-evals-subset.cjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

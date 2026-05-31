@@ -1,0 +1,320 @@
+[
+  {
+    "id": "E042",
+    "gold_status": "section_dependent",
+    "user_query": "What happens if the total games are tied when time expires in a USTA timed match?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "league"
+    },
+    "expected_controlling_source": "PNW League Regulations",
+    "expected_source_priority": 1,
+    "expected_rule_reference": "Timed Match Procedures",
+    "expected_citation_string": "PNW League Regulations",
+    "right_answer": "If total games are tied when time expires, many USTA timed match procedures require a single deciding or sudden-death point to determine the winner, depending on the local league rules.",
+    "evidence": [
+      {
+        "source": "PNW League Regulations",
+        "quote_or_paraphrase": "If score is tied, play one deciding point.",
+        "citation": "Timed Match Procedures"
+      }
+    ],
+    "must_include": [
+      "tied games",
+      "deciding or sudden death point",
+      "depends on local rules"
+    ],
+    "must_not_include": [
+      "match automatically ends in a tie",
+      "full tiebreak set is played"
+    ]
+  },
+  {
+    "id": "E043",
+    "gold_status": "edge_case",
+    "user_query": "Time runs out right after I hit a winner but before it lands. Does the point count?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "league"
+    },
+    "expected_controlling_source": "PNW League Regulations",
+    "expected_source_priority": 1,
+    "expected_rule_reference": "Timed Match Procedures",
+    "expected_citation_string": "PNW League Regulations",
+    "right_answer": "Yes. The point must be completed if it was already in progress when time expired. The result of that point counts once it finishes.",
+    "evidence": [
+      {
+        "source": "PNW League Regulations",
+        "quote_or_paraphrase": "A point in play as the timer goes off should be finished.",
+        "citation": "Timed Match Procedures"
+      }
+    ],
+    "must_include": [
+      "finish the point",
+      "result counts"
+    ],
+    "must_not_include": [
+      "point is canceled",
+      "automatic let"
+    ]
+  },
+  {
+    "id": "E044",
+    "gold_status": "edge_case",
+    "user_query": "I hit a ball that my opponent clearly could not reach, but I accidentally shouted during the shot. Do I lose the point?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "any"
+    },
+    "expected_controlling_source": "ITF Rules of Tennis (2026)",
+    "expected_source_priority": 5,
+    "expected_rule_reference": "Rule 26 (Hindrance)",
+    "expected_citation_string": "ITF Rule 26",
+    "right_answer": "It depends on whether the hindrance was intentional. If the shout was unintentional, the point is replayed as a let. If it was deliberate and hindered the opponent, you lose the point.",
+    "evidence": [
+      {
+        "source": "ITF Rules of Tennis (2026)",
+        "quote_or_paraphrase": "Deliberate hindrance: opponent wins the point. Unintentional hindrance: replay the point.",
+        "citation": "Rule 26"
+      }
+    ],
+    "must_include": [
+      "intentional vs unintentional distinction",
+      "replay vs loss of point"
+    ],
+    "must_not_include": [
+      "always lose the point",
+      "always replay the point"
+    ]
+  },
+  {
+    "id": "E045",
+    "gold_status": "trap",
+    "user_query": "My opponent hit a ball that landed just out, but I returned it anyway. Can I still call it out after I hit it?",
+    "expected_context": {
+      "officiated": "assume_unofficiated",
+      "competition": "league"
+    },
+    "expected_controlling_source": "The Code (Unofficiated Matches)",
+    "expected_source_priority": 3,
+    "expected_rule_reference": "Prompt Calls",
+    "expected_citation_string": "The Code",
+    "right_answer": "No. A player must make calls promptly. If you return the ball, you are generally considered to have accepted it as good and cannot later call it out.",
+    "evidence": [
+      {
+        "source": "The Code (Unofficiated Matches)",
+        "quote_or_paraphrase": "Calls must be made promptly; delay implies acceptance.",
+        "citation": "Prompt Calls"
+      }
+    ],
+    "must_include": [
+      "prompt calls required",
+      "returning ball implies acceptance"
+    ],
+    "must_not_include": [
+      "can call it anytime later",
+      "replay the point automatically"
+    ]
+  },
+  {
+    "id": "E046",
+    "gold_status": "edge_case",
+    "user_query": "In a timed USTA league match, the total games are tied when time runs out. Who wins?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "league"
+    },
+    "expected_controlling_source": "PNW League Regulations",
+    "expected_source_priority": 1,
+    "expected_rule_reference": "Timed Match Procedures",
+    "expected_citation_string": "PNW League Regulations",
+    "right_answer": "It depends on the local league rules. In many USTA timed match formats, including PNW, a single deciding or sudden-death point is played to determine the winner rather than ending in a tie.",
+    "evidence": [
+      {
+        "source": "PNW League Regulations",
+        "quote_or_paraphrase": "If score is tied, play one deciding point.",
+        "citation": "Timed Match Procedures"
+      }
+    ],
+    "must_include": [
+      "depends on local rules",
+      "deciding or sudden death point"
+    ],
+    "must_not_include": [
+      "automatic tie",
+      "full tiebreak set"
+    ]
+  },
+  {
+    "id": "E047",
+    "gold_status": "trap",
+    "user_query": "We realized after 3 games that we started on the wrong sides of the court. Do we restart the match?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "league"
+    },
+    "expected_controlling_source": "ITF Rules of Tennis (2026)",
+    "expected_source_priority": 5,
+    "expected_rule_reference": "Rule 27",
+    "expected_citation_string": "ITF Rule 27",
+    "right_answer": "No. Points already played stand. Players correct the positions going forward, but the match does not restart.",
+    "evidence": [
+      {
+        "source": "ITF Rules of Tennis (2026)",
+        "quote_or_paraphrase": "Errors are corrected as soon as discovered; previous points stand.",
+        "citation": "Rule 27"
+      }
+    ],
+    "must_include": [
+      "points stand",
+      "correct going forward"
+    ],
+    "must_not_include": [
+      "restart match",
+      "erase games"
+    ]
+  },
+  {
+    "id": "E048",
+    "gold_status": "edge_case",
+    "user_query": "In a tiebreak, we discover the wrong player has been serving after an even number of points. What happens?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "any"
+    },
+    "expected_controlling_source": "ITF Rules of Tennis (2026)",
+    "expected_source_priority": 5,
+    "expected_rule_reference": "Rule 27",
+    "expected_citation_string": "ITF Rule 27",
+    "right_answer": "If discovered after an even number of points, the service order is corrected immediately.",
+    "evidence": [
+      {
+        "source": "ITF Rules of Tennis (2026)",
+        "quote_or_paraphrase": "If discovered after an even number of points, correct immediately.",
+        "citation": "Rule 27"
+      }
+    ],
+    "must_include": [
+      "even number of points",
+      "fix immediately"
+    ],
+    "must_not_include": [
+      "leave it as is",
+      "replay points"
+    ]
+  },
+  {
+    "id": "E049",
+    "gold_status": "trap",
+    "user_query": "A ball was 99% out but I wasn't completely sure. Can I call it out?",
+    "expected_context": {
+      "officiated": "assume_unofficiated",
+      "competition": "league"
+    },
+    "expected_controlling_source": "The Code (Unofficiated Matches)",
+    "expected_source_priority": 3,
+    "expected_rule_reference": "Line Calling",
+    "expected_citation_string": "The Code",
+    "right_answer": "No. If you are not certain the ball is out, it must be called good. The opponent gets the benefit of the doubt.",
+    "evidence": [
+      {
+        "source": "The Code (Unofficiated Matches)",
+        "quote_or_paraphrase": "Any doubt must be resolved in favor of the opponent.",
+        "citation": "Line Calling"
+      }
+    ],
+    "must_include": [
+      "must be certain",
+      "benefit of doubt"
+    ],
+    "must_not_include": [
+      "99 percent is enough",
+      "guessing is allowed"
+    ]
+  },
+  {
+    "id": "E050",
+    "gold_status": "edge_case",
+    "user_query": "My opponent’s hat fell off during a point and distracted me. Do I win the point?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "any"
+    },
+    "expected_controlling_source": "ITF Rules of Tennis (2026)",
+    "expected_source_priority": 5,
+    "expected_rule_reference": "Rule 26",
+    "expected_citation_string": "ITF Rule 26",
+    "right_answer": "No. This is generally treated as unintentional hindrance. A let may be played if it affected the point, but it is not an automatic loss of point.",
+    "evidence": [
+      {
+        "source": "ITF Rules of Tennis (2026)",
+        "quote_or_paraphrase": "Unintentional hindrance results in replay of the point.",
+        "citation": "Rule 26"
+      }
+    ],
+    "must_include": [
+      "unintentional hindrance",
+      "possible let"
+    ],
+    "must_not_include": [
+      "automatic loss of point"
+    ]
+  },
+  {
+    "id": "E051",
+    "gold_status": "trap",
+    "user_query": "Can spectators tell me if a ball was in or out during a match?",
+    "expected_context": {
+      "officiated": "assume_unofficiated",
+      "competition": "league"
+    },
+    "expected_controlling_source": "The Code (Unofficiated Matches)",
+    "expected_source_priority": 3,
+    "expected_rule_reference": "Spectators",
+    "expected_citation_string": "The Code",
+    "right_answer": "No. Spectators are not allowed to make or assist with line calls. Players are responsible for calls on their side of the court.",
+    "evidence": [
+      {
+        "source": "The Code (Unofficiated Matches)",
+        "quote_or_paraphrase": "Spectators have no role in making calls.",
+        "citation": "Spectators"
+      }
+    ],
+    "must_include": [
+      "spectators cannot make calls",
+      "players responsible"
+    ],
+    "must_not_include": [
+      "spectators decide calls"
+    ]
+  },
+  {
+    "id": "E052",
+    "gold_status": "edge_case",
+    "user_query": "A let is called after my first serve fault because a ball rolled onto the court. Do I get a first or second serve?",
+    "expected_context": {
+      "officiated": "either",
+      "competition": "any"
+    },
+    "expected_controlling_source": "ITF Rules of Tennis (2026)",
+    "expected_source_priority": 5,
+    "expected_rule_reference": "Rule 23",
+    "expected_citation_string": "ITF Rule 23",
+    "right_answer": "You get a first serve. When a let is called due to outside interference, the entire point is replayed, so previous faults are canceled.",
+    "evidence": [
+      {
+        "source": "ITF Rules of Tennis (2026)",
+        "quote_or_paraphrase": "When a let is called, the whole point is replayed.",
+        "citation": "Rule 23"
+      }
+    ],
+    "must_include": [
+      "first serve",
+      "whole point replayed"
+    ],
+    "must_not_include": [
+      "second serve continues",
+      "fault still counts"
+    ]
+  }
+]
