@@ -15,7 +15,6 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
   const [voiceInfo, setVoiceInfo] = useState('');
   const [isVoiceRecordingFallback, setIsVoiceRecordingFallback] = useState(false);
   const [voiceRearmAt, setVoiceRearmAt] = useState(0);
-  const [voiceDebug, setVoiceDebug] = useState('');
   const [showJumpToLatest, setShowJumpToLatest] = useState(false);
   const messagesEndRef = useRef(null);
   const messageAnchorRefs = useRef(new Map());
@@ -41,7 +40,6 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
   const hasDetectedSpeechRef = useRef(false);
   const autoStopTimeoutRef = useRef(null);
   const autoStopReasonRef = useRef('unknown');
-  const dataAvailableCountRef = useRef(0);
   const voiceRearmTimeoutRef = useRef(null);
   const voiceRearmFailureCountRef = useRef(0);
   const voiceSessionStartAtRef = useRef(0);
@@ -469,14 +467,10 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       recorderMimeTypeRef.current = recorder.mimeType || requestedMimeType || '';
       recordedChunksRef.current = [];
       autoStopReasonRef.current = 'manual';
-      dataAvailableCountRef.current = 0;
       setVoiceInfo('');
-      setVoiceDebug('');
       recorder.ondataavailable = async (event) => {
         if (event.data && event.data.size > 0) {
-          dataAvailableCountRef.current += 1;
           recordedChunksRef.current.push(event.data);
-          setVoiceDebug(`live events=${dataAvailableCountRef.current} chunks=${recordedChunksRef.current.length} bytes=${recordedChunksRef.current.reduce((s, c) => s + (c?.size || 0), 0)}`);
           await updateProgressiveTranscript();
         }
       };
@@ -496,9 +490,6 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
           session_ms: voiceSessionStartAtRef.current ? Date.now() - voiceSessionStartAtRef.current : 0,
         };
         console.info('[voice] recorder stopped', recordingDiagnostics);
-        setVoiceDebug(
-          `stop=${stopReason} events=${dataAvailableCountRef.current} chunks=${chunks.length} bytes=${totalBytes} mime=${mimeType || 'unknown'} ios=${recordingDiagnostics.ios_like} ms=${recordingDiagnostics.session_ms}`,
-        );
         stopLivePreviewRecognition();
         stopAutoStopWatchers();
         mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
@@ -531,7 +522,6 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
           if (suppressVoicePopulateRef.current) return;
           if (!transcript) {
             console.warn('[voice] audio sent but transcript was empty', { ...recordingDiagnostics, blob_bytes: audioBlob.size });
-            setVoiceDebug((prev) => `${prev} | empty_transcript blob=${audioBlob.size}`);
             trackTelemetry('voice_no_speech', { ...recordingDiagnostics, blob_bytes: audioBlob.size, reason: 'empty_transcript' });
             setVoiceError('No speech detected. Try again and speak clearly.');
             scheduleVoiceRearmGate('no_speech');
@@ -792,11 +782,6 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
         {voiceStatus && (
           <div className={voiceStatus.type === 'error' ? 'chat-voice-error' : 'chat-voice-note'} role={voiceStatus.type === 'error' ? 'alert' : 'status'}>
             {voiceStatus.text}
-          </div>
-        )}
-        {voiceDebug && (
-          <div className="chat-voice-note" role="status" style={{ fontFamily: 'monospace', fontSize: '11px', opacity: 0.75, wordBreak: 'break-all' }}>
-            debug: {voiceDebug}
           </div>
         )}
       </div>
