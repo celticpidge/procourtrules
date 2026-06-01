@@ -546,7 +546,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
           setIsVoiceFinalizing(false);
           console.warn('[voice] no audio captured (empty recording)', recordingDiagnostics);
           trackTelemetry('voice_no_speech', { ...recordingDiagnostics, reason: 'empty_recording' });
-          setVoiceError('No speech detected. Try again and speak clearly.');
+          setVoiceInfo('Didn’t catch that. Tap the mic and try again.');
           scheduleVoiceRearmGate('no_speech');
           return;
         }
@@ -558,7 +558,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
           if (!transcript || looksLikeTranscriptionHallucination(transcript)) {
             console.warn('[voice] audio sent but transcript was empty', { ...recordingDiagnostics, blob_bytes: audioBlob.size });
             trackTelemetry('voice_no_speech', { ...recordingDiagnostics, blob_bytes: audioBlob.size, reason: 'empty_transcript' });
-            setVoiceError('No speech detected. Try again and speak clearly.');
+            setVoiceInfo('Didn’t catch that. Tap the mic and try again.');
             scheduleVoiceRearmGate('no_speech');
             return;
           }
@@ -814,15 +814,16 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
         </button>
       )}
 
-      <div className="chat-status-slot" aria-live="polite">
-        {voiceStatus && (
-          <div className={voiceStatus.type === 'error' ? 'chat-voice-error' : 'chat-voice-note'} role={voiceStatus.type === 'error' ? 'alert' : 'status'}>
-            {voiceStatus.text}
-          </div>
-        )}
-      </div>
+      <div className="chat-footer">
+        <div className="chat-status-slot" aria-live="polite">
+          {voiceStatus && (
+            <div className={voiceStatus.type === 'error' ? 'chat-voice-error' : 'chat-voice-note'} role={voiceStatus.type === 'error' ? 'alert' : 'status'}>
+              {voiceStatus.text}
+            </div>
+          )}
+        </div>
 
-      <form className={`chat-input-form ${(isVoiceListening || isVoiceFinalizing) ? 'chat-input-form-voice-active' : ''}`} onSubmit={handleSubmit}>
+        <form className={`chat-input-form ${(isVoiceListening || isVoiceFinalizing) ? 'chat-input-form-voice-active' : ''}`} onSubmit={handleSubmit}>
         <textarea
           ref={inputRef}
           className="chat-input"
@@ -877,11 +878,12 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
         </button>
       </form>
 
-      {remaining !== null && (
-        <div className="chat-remaining">
-          {50 - remaining} of 50 questions used today
-        </div>
-      )}
+        {remaining !== null && (
+          <div className="chat-remaining">
+            {50 - remaining} of 50 questions used today
+          </div>
+        )}
+      </div>
     </div>
   );
 }
