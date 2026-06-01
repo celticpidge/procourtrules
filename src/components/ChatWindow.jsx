@@ -179,6 +179,20 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
     return true;
   }
 
+  function looksLikeTranscriptionHallucination(text) {
+    // Transcription models invent repeated characters/words when given a short,
+    // near-silent clip (e.g. the instant right after the mic is tapped). Suppress
+    // those so the live preview doesn't flash garbage before real speech arrives.
+    const trimmed = (text || '').trim();
+    if (!trimmed) return true;
+    const compact = trimmed.replace(/[^\p{L}\p{N}]/gu, '');
+    if (compact.length < 2) return true; // mostly punctuation/symbols
+    if (/^(.)\1+$/u.test(compact)) return true; // a single character repeated
+    const words = trimmed.toLowerCase().split(/\s+/).filter(Boolean);
+    if (words.length >= 3 && new Set(words).size === 1) return true; // "you you you"
+    return false;
+  }
+
   useEffect(() => {
     const onScroll = () => {
       const nearBottom = isNearBottom();
@@ -429,7 +443,10 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
 
     const mimeType = resolveRecordingMimeType(mediaRecorderRef.current, chunks);
     const audioBlob = new Blob(chunks, { type: mimeType });
-    if (audioBlob.size < 2500) return;
+    // Wait for ~2s of audio (≈6KB at 24kbps) before the first preview so we
+    // don't transcribe the near-silent moment right after the mic is tapped,
+    // which is what makes the model hallucinate repeated characters.
+    if (audioBlob.size < 6000) return;
 
     previewTranscriptionInFlightRef.current = true;
     previewTranscriptionLastAtRef.current = now;
@@ -437,6 +454,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
     try {
       const transcript = (await sendTranscription(audioBlob)).trim();
       if (!transcript || suppressVoicePopulateRef.current) return;
+      if (looksLikeTranscriptionHallucination(transcript)) return;
       const baseText = inputBeforeVoiceRef.current;
       const nextValue = baseText ? `${baseText} ${transcript}` : transcript;
       setInput(nextValue);
