@@ -1060,7 +1060,7 @@ body {
     margin: 0 8px 8px;
     padding: 10px;
     gap: 8px;
-    bottom: 8px;
+    bottom: max(8px, env(safe-area-inset-bottom));
   }
 
   .chat-jump-latest {
@@ -1072,7 +1072,7 @@ body {
 
   .chat-input {
     padding: 10px 12px;
-    font-size: 0.95rem;
+    font-size: 16px;
     min-height: 42px;
     max-height: 120px;
   }
