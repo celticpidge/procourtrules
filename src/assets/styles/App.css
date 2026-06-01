@@ -358,7 +358,7 @@ body {
 .chat-messages {
   flex: 1;
   padding: 20px;
-  padding-bottom: 96px;
+  padding-bottom: calc(120px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -1029,7 +1029,7 @@ body {
 
   .chat-messages {
     padding: 14px 12px;
-    padding-bottom: 88px;
+    padding-bottom: calc(110px + env(safe-area-inset-bottom));
   }
 
   .message-anchor {
