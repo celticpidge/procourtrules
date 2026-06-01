@@ -71,6 +71,61 @@ body {
   flex: 1;
 }
 
+/* iOS Add to Home Screen hint */
+.install-prompt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 16px 0;
+  padding: 12px 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  flex-shrink: 0;
+}
+
+.install-prompt-body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.install-prompt-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
+  flex-shrink: 0;
+}
+
+.install-prompt-text {
+  font-size: 0.9rem;
+  line-height: 1.35;
+  color: var(--text-primary);
+}
+
+.install-prompt-text strong {
+  color: var(--accent);
+}
+
+.install-prompt-share {
+  white-space: nowrap;
+}
+
+.install-prompt-dismiss {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  flex-shrink: 0;
+}
+
+.install-prompt-dismiss:hover {
+  color: var(--text-primary);
+}
+
 .header-reset {
   background: var(--bg-tertiary);
   color: var(--text-secondary);
