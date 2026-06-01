@@ -181,10 +181,13 @@ body {
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 28px;
+  padding-bottom: max(28px, env(safe-area-inset-bottom));
   max-width: 520px;
   width: 90%;
-  max-height: 80vh;
+  max-height: calc(100dvh - max(32px, env(safe-area-inset-top)) - max(32px, env(safe-area-inset-bottom)));
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .modal-header {
@@ -355,9 +358,14 @@ body {
 .chat-messages {
   flex: 1;
   padding: 20px;
+  padding-bottom: 96px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.message-anchor {
+  scroll-margin-top: 96px;
 }
 
 .chat-empty {
@@ -1017,6 +1025,11 @@ body {
 
   .chat-messages {
     padding: 14px 12px;
+    padding-bottom: 88px;
+  }
+
+  .message-anchor {
+    scroll-margin-top: 80px;
   }
 
   .message {

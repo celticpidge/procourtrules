@@ -763,6 +763,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
         {messages.map((msg, i) => (
           <div
             key={i}
+            className="message-anchor"
             ref={(node) => {
               if (node) messageAnchorRefs.current.set(i, node);
               else messageAnchorRefs.current.delete(i);
