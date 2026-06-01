@@ -97,6 +97,11 @@ export async function handleTranscribeRequest(req, res) {
       const blob = new Blob([audioBuffer], { type: effectiveMimeType });
       form.append('file', blob, fileName);
       form.append('model', model);
+      // Constrain output to English with deterministic decoding. This curbs the
+      // model's tendency to hallucinate non-English (e.g. CJK) text or phantom
+      // phrases on breaths, sighs, and other non-speech audio.
+      form.append('language', 'en');
+      form.append('temperature', '0');
 
       const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
         method: 'POST',

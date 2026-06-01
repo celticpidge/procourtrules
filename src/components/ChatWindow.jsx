@@ -188,8 +188,21 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
     const compact = trimmed.replace(/[^\p{L}\p{N}]/gu, '');
     if (compact.length < 2) return true; // mostly punctuation/symbols
     if (/^(.)\1+$/u.test(compact)) return true; // a single character repeated
+    // Non-speech sounds (sighs, breaths) make the model emit non-Latin scripts
+    // such as CJK characters. We only support English, so treat those as noise.
+    if (/[^\p{Script=Latin}\p{N}\p{P}\p{Z}\p{M}]/u.test(trimmed)) return true;
     const words = trimmed.toLowerCase().split(/\s+/).filter(Boolean);
     if (words.length >= 3 && new Set(words).size === 1) return true; // "you you you"
+    // Known phantom phrases the model emits for silence/breath. Match only when
+    // the whole transcript is one of these (so real questions are untouched).
+    const PHANTOM_PHRASES = new Set([
+      'you', 'thank you', 'thank you.', 'thanks', 'thanks for watching',
+      'thanks for watching.', 'bye', 'bye.', 'bye bye', 'bye-bye', 'bye bye.',
+      'ok bye bye', 'ok bye bye.', 'okay', 'ok', 'ok.', 'okay.', 'so', 'um',
+      'uh', 'hmm', 'mm', 'mhm', 'yeah', 'oh', 'please subscribe', 'subscribe',
+    ]);
+    const normalized = trimmed.toLowerCase().replace(/[.,!?…\s]+/g, ' ').trim();
+    if (PHANTOM_PHRASES.has(normalized)) return true;
     return false;
   }
 
@@ -434,6 +447,10 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
     if (!progressivePreviewEnabledRef.current) return;
     if (suppressVoicePopulateRef.current) return;
     if (previewTranscriptionInFlightRef.current) return;
+    // Don't transcribe until the silence analyser has actually detected speech.
+    // Sighs/breaths stay below the threshold, so this keeps the model from
+    // hallucinating phantom words on non-speech audio.
+    if (!hasDetectedSpeechRef.current) return;
 
     const now = Date.now();
     if (now - previewTranscriptionLastAtRef.current < 1200) return;
@@ -538,7 +555,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
           const audioBlob = new Blob(chunks, { type: mimeType });
           const transcript = (await sendTranscription(audioBlob)).trim();
           if (suppressVoicePopulateRef.current) return;
-          if (!transcript) {
+          if (!transcript || looksLikeTranscriptionHallucination(transcript)) {
             console.warn('[voice] audio sent but transcript was empty', { ...recordingDiagnostics, blob_bytes: audioBlob.size });
             trackTelemetry('voice_no_speech', { ...recordingDiagnostics, blob_bytes: audioBlob.size, reason: 'empty_transcript' });
             setVoiceError('No speech detected. Try again and speak clearly.');
