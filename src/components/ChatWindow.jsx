@@ -301,19 +301,23 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       success: 1200,
       submitted: 1200,
       manual: 1200,
-      silence: 3500,
-      no_speech: 4500,
+      silence: 1500,
+      no_speech: 1200,
       recording_failed: 4000,
       no_results: 2800,
       startup_timeout: 2200,
     };
 
+    // A no-speech result (a sigh, breath, or silence) isn't a real failure and
+    // the UI invites the user to tap again immediately, so don't escalate the
+    // re-arm delay for it the way we do for genuine recording/start failures.
+    const isSoftReason = reason === 'success' || reason === 'no_speech' || reason === 'silence';
     const baseDelay = baseDelays[reason] ?? 1800;
-    const failureBonus = reason === 'success'
+    const failureBonus = isSoftReason
       ? 0
       : Math.min(voiceRearmFailureCountRef.current * 750, 3500);
 
-    if (reason === 'success') {
+    if (isSoftReason) {
       voiceRearmFailureCountRef.current = 0;
     } else {
       voiceRearmFailureCountRef.current += 1;
