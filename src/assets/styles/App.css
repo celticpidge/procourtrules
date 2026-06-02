@@ -33,7 +33,8 @@ body {
 .app {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   max-width: 768px;
   margin: 0 auto;
 }
@@ -44,6 +45,9 @@ body {
   align-items: center;
   gap: 14px;
   padding: 20px 24px;
+  padding-top: max(20px, env(safe-area-inset-top));
+  padding-left: max(24px, env(safe-area-inset-left));
+  padding-right: max(24px, env(safe-area-inset-right));
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
   position: sticky;
@@ -69,6 +73,61 @@ body {
   font-size: 0.85rem;
   color: var(--text-secondary);
   flex: 1;
+}
+
+/* iOS Add to Home Screen hint */
+.install-prompt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 16px 0;
+  padding: 12px 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  flex-shrink: 0;
+}
+
+.install-prompt-body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.install-prompt-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
+  flex-shrink: 0;
+}
+
+.install-prompt-text {
+  font-size: 0.9rem;
+  line-height: 1.35;
+  color: var(--text-primary);
+}
+
+.install-prompt-text strong {
+  color: var(--accent);
+}
+
+.install-prompt-share {
+  white-space: nowrap;
+}
+
+.install-prompt-dismiss {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  flex-shrink: 0;
+}
+
+.install-prompt-dismiss:hover {
+  color: var(--text-primary);
 }
 
 .header-reset {
@@ -122,10 +181,13 @@ body {
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 28px;
+  padding-bottom: max(28px, env(safe-area-inset-bottom));
   max-width: 520px;
   width: 90%;
-  max-height: 80vh;
+  max-height: calc(100dvh - max(32px, env(safe-area-inset-top)) - max(32px, env(safe-area-inset-bottom)));
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .modal-header {
@@ -296,9 +358,14 @@ body {
 .chat-messages {
   flex: 1;
   padding: 20px;
+  padding-bottom: calc(140px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.message-anchor {
+  scroll-margin-top: 96px;
 }
 
 .chat-empty {
@@ -725,20 +792,24 @@ body {
 }
 
 /* Input Form */
+.chat-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+
 .chat-input-form {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
   gap: 10px;
   padding: 14px 18px;
-  margin: 0 12px 12px;
+  margin: 0 12px;
   border-top: 1px solid var(--border);
   border: 1px solid var(--border);
   border-radius: 18px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%), var(--bg-secondary);
   flex-shrink: 0;
-  position: sticky;
-  bottom: 12px;
-  z-index: 10;
   align-items: center;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
   backdrop-filter: blur(6px);
@@ -875,8 +946,7 @@ body {
 }
 
 .chat-status-slot {
-  min-height: 38px;
-  margin: 0 12px;
+  margin: 0 12px 6px;
 }
 
 .chat-voice-note,
@@ -885,18 +955,19 @@ body {
   padding: 8px 12px;
   border-radius: 10px;
   font-size: 0.82rem;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
 }
 
 .chat-voice-note {
   color: var(--text-secondary);
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--bg-secondary);
 }
 
 .chat-voice-error {
   color: var(--error);
   border: 1px solid rgba(239, 83, 80, 0.45);
-  background: rgba(239, 83, 80, 0.1);
+  background: var(--bg-secondary);
 }
 
 /* Remaining */
@@ -958,6 +1029,11 @@ body {
 
   .chat-messages {
     padding: 14px 12px;
+    padding-bottom: calc(110px + env(safe-area-inset-bottom));
+  }
+
+  .message-anchor {
+    scroll-margin-top: 80px;
   }
 
   .message {
@@ -996,12 +1072,15 @@ body {
     width: 100%;
   }
 
+  .chat-footer {
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+
   .chat-input-form {
     grid-template-columns: minmax(0, 1fr) auto auto;
-    margin: 0 8px 8px;
+    margin: 0 8px;
     padding: 10px;
     gap: 8px;
-    bottom: 8px;
   }
 
   .chat-jump-latest {
@@ -1013,7 +1092,7 @@ body {
 
   .chat-input {
     padding: 10px 12px;
-    font-size: 0.95rem;
+    font-size: 17px;
     min-height: 42px;
     max-height: 120px;
   }
@@ -1040,8 +1119,7 @@ body {
   }
 
   .chat-status-slot {
-    min-height: 34px;
-    margin: 0 8px;
+    margin: 0 8px 6px;
   }
 
   .modal-content {

@@ -1,5 +1,6 @@
 import Header from './components/Header.jsx';
 import ChatWindow from './components/ChatWindow.jsx';
+import InstallPrompt from './components/InstallPrompt.jsx';
 import { useChat } from './hooks/useChat.js';
 import './assets/styles/App.css';
 
@@ -9,6 +10,7 @@ export default function App() {
   return (
     <div className="app">
       <Header onReset={messages.length > 0 ? reset : null} />
+      <InstallPrompt />
       <ChatWindow
         messages={messages}
         isLoading={isLoading}

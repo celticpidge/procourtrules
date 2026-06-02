@@ -11,7 +11,9 @@
     "test:watch": "vitest",
     "build:embeddings": "node build-embeddings.cjs",
     "evals": "node run-evals.cjs",
-    "evals:subset": "node run-evals-subset.cjs"
+    "evals:subset": "node run-evals-subset.cjs",
+    "icons": "node scripts/generate-icons.mjs",
+    "splash": "node scripts/generate-splash.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
@@ -29,6 +31,7 @@
     "@vitejs/plugin-react": "^4.3.0",
     "jsdom": "^29.0.1",
     "pdf-parse": "^2.4.5",
+    "sharp": "^0.34.5",
     "vite": "^5.4.0",
     "vite-plugin-pwa": "^0.20.0",
     "vitest": "^4.1.2"

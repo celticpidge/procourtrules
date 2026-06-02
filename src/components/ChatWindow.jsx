@@ -19,6 +19,8 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
   const messagesEndRef = useRef(null);
   const messageAnchorRefs = useRef(new Map());
   const inputRef = useRef(null);
+  const footerRef = useRef(null);
+  const messagesRef = useRef(null);
   const recognitionRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const mediaStreamRef = useRef(null);
@@ -110,6 +112,23 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
     queueGrowTextarea();
   }, [input]);
 
+  // Reserve exactly enough space at the bottom of the message list for the
+  // floating footer (input + status note + counter + safe-area inset) so the
+  // last line of an answer never scrolls underneath it. The footer height is
+  // dynamic, so measure it instead of guessing a fixed value.
+  useEffect(() => {
+    const footer = footerRef.current;
+    const messagesEl = messagesRef.current;
+    if (!footer || !messagesEl || typeof ResizeObserver === 'undefined') return;
+    const applyPadding = () => {
+      messagesEl.style.paddingBottom = `${footer.offsetHeight + 16}px`;
+    };
+    applyPadding();
+    const observer = new ResizeObserver(applyPadding);
+    observer.observe(footer);
+    return () => observer.disconnect();
+  }, []);
+
   function classifyTranscriptionError(errorMessage = '') {
     const msg = errorMessage.toLowerCase();
     if (msg.includes('connection failed')) return 'network';
@@ -177,6 +196,33 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
     // these growing blobs are therefore supported across containers, including
     // iOS/WebKit, enabling near real-time previews.
     return true;
+  }
+
+  function looksLikeTranscriptionHallucination(text) {
+    // Transcription models invent repeated characters/words when given a short,
+    // near-silent clip (e.g. the instant right after the mic is tapped). Suppress
+    // those so the live preview doesn't flash garbage before real speech arrives.
+    const trimmed = (text || '').trim();
+    if (!trimmed) return true;
+    const compact = trimmed.replace(/[^\p{L}\p{N}]/gu, '');
+    if (compact.length < 2) return true; // mostly punctuation/symbols
+    if (/^(.)\1+$/u.test(compact)) return true; // a single character repeated
+    // Non-speech sounds (sighs, breaths) make the model emit non-Latin scripts
+    // such as CJK characters. We only support English, so treat those as noise.
+    if (/[^\p{Script=Latin}\p{N}\p{P}\p{Z}\p{M}]/u.test(trimmed)) return true;
+    const words = trimmed.toLowerCase().split(/\s+/).filter(Boolean);
+    if (words.length >= 3 && new Set(words).size === 1) return true; // "you you you"
+    // Known phantom phrases the model emits for silence/breath. Match only when
+    // the whole transcript is one of these (so real questions are untouched).
+    const PHANTOM_PHRASES = new Set([
+      'you', 'thank you', 'thank you.', 'thanks', 'thanks for watching',
+      'thanks for watching.', 'bye', 'bye.', 'bye bye', 'bye-bye', 'bye bye.',
+      'ok bye bye', 'ok bye bye.', 'okay', 'ok', 'ok.', 'okay.', 'so', 'um',
+      'uh', 'hmm', 'mm', 'mhm', 'yeah', 'oh', 'please subscribe', 'subscribe',
+    ]);
+    const normalized = trimmed.toLowerCase().replace(/[.,!?…\s]+/g, ' ').trim();
+    if (PHANTOM_PHRASES.has(normalized)) return true;
+    return false;
   }
 
   useEffect(() => {
@@ -274,19 +320,23 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
       success: 1200,
       submitted: 1200,
       manual: 1200,
-      silence: 3500,
-      no_speech: 4500,
+      silence: 1500,
+      no_speech: 1200,
       recording_failed: 4000,
       no_results: 2800,
       startup_timeout: 2200,
     };
 
+    // A no-speech result (a sigh, breath, or silence) isn't a real failure and
+    // the UI invites the user to tap again immediately, so don't escalate the
+    // re-arm delay for it the way we do for genuine recording/start failures.
+    const isSoftReason = reason === 'success' || reason === 'no_speech' || reason === 'silence';
     const baseDelay = baseDelays[reason] ?? 1800;
-    const failureBonus = reason === 'success'
+    const failureBonus = isSoftReason
       ? 0
       : Math.min(voiceRearmFailureCountRef.current * 750, 3500);
 
-    if (reason === 'success') {
+    if (isSoftReason) {
       voiceRearmFailureCountRef.current = 0;
     } else {
       voiceRearmFailureCountRef.current += 1;
@@ -420,6 +470,10 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
     if (!progressivePreviewEnabledRef.current) return;
     if (suppressVoicePopulateRef.current) return;
     if (previewTranscriptionInFlightRef.current) return;
+    // Don't transcribe until the silence analyser has actually detected speech.
+    // Sighs/breaths stay below the threshold, so this keeps the model from
+    // hallucinating phantom words on non-speech audio.
+    if (!hasDetectedSpeechRef.current) return;
 
     const now = Date.now();
     if (now - previewTranscriptionLastAtRef.current < 1200) return;
@@ -429,7 +483,10 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
 
     const mimeType = resolveRecordingMimeType(mediaRecorderRef.current, chunks);
     const audioBlob = new Blob(chunks, { type: mimeType });
-    if (audioBlob.size < 2500) return;
+    // Wait for ~2s of audio (≈6KB at 24kbps) before the first preview so we
+    // don't transcribe the near-silent moment right after the mic is tapped,
+    // which is what makes the model hallucinate repeated characters.
+    if (audioBlob.size < 6000) return;
 
     previewTranscriptionInFlightRef.current = true;
     previewTranscriptionLastAtRef.current = now;
@@ -437,6 +494,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
     try {
       const transcript = (await sendTranscription(audioBlob)).trim();
       if (!transcript || suppressVoicePopulateRef.current) return;
+      if (looksLikeTranscriptionHallucination(transcript)) return;
       const baseText = inputBeforeVoiceRef.current;
       const nextValue = baseText ? `${baseText} ${transcript}` : transcript;
       setInput(nextValue);
@@ -511,7 +569,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
           setIsVoiceFinalizing(false);
           console.warn('[voice] no audio captured (empty recording)', recordingDiagnostics);
           trackTelemetry('voice_no_speech', { ...recordingDiagnostics, reason: 'empty_recording' });
-          setVoiceError('No speech detected. Try again and speak clearly.');
+          setVoiceInfo('Didn’t catch that. Tap the mic and try again.');
           scheduleVoiceRearmGate('no_speech');
           return;
         }
@@ -520,10 +578,10 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
           const audioBlob = new Blob(chunks, { type: mimeType });
           const transcript = (await sendTranscription(audioBlob)).trim();
           if (suppressVoicePopulateRef.current) return;
-          if (!transcript) {
+          if (!transcript || looksLikeTranscriptionHallucination(transcript)) {
             console.warn('[voice] audio sent but transcript was empty', { ...recordingDiagnostics, blob_bytes: audioBlob.size });
             trackTelemetry('voice_no_speech', { ...recordingDiagnostics, blob_bytes: audioBlob.size, reason: 'empty_transcript' });
-            setVoiceError('No speech detected. Try again and speak clearly.');
+            setVoiceInfo('Didn’t catch that. Tap the mic and try again.');
             scheduleVoiceRearmGate('no_speech');
             return;
           }
@@ -732,7 +790,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
 
   return (
     <div className="chat-window">
-      <div className="chat-messages">
+      <div className="chat-messages" ref={messagesRef}>
         {messages.length === 0 && !isLoading && (
           <div className="chat-empty">
             <p className="chat-welcome">
@@ -745,6 +803,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
         {messages.map((msg, i) => (
           <div
             key={i}
+            className="message-anchor"
             ref={(node) => {
               if (node) messageAnchorRefs.current.set(i, node);
               else messageAnchorRefs.current.delete(i);
@@ -778,15 +837,16 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
         </button>
       )}
 
-      <div className="chat-status-slot" aria-live="polite">
-        {voiceStatus && (
-          <div className={voiceStatus.type === 'error' ? 'chat-voice-error' : 'chat-voice-note'} role={voiceStatus.type === 'error' ? 'alert' : 'status'}>
-            {voiceStatus.text}
-          </div>
-        )}
-      </div>
+      <div className="chat-footer" ref={footerRef}>
+        <div className="chat-status-slot" aria-live="polite">
+          {voiceStatus && (
+            <div className={voiceStatus.type === 'error' ? 'chat-voice-error' : 'chat-voice-note'} role={voiceStatus.type === 'error' ? 'alert' : 'status'}>
+              {voiceStatus.text}
+            </div>
+          )}
+        </div>
 
-      <form className={`chat-input-form ${(isVoiceListening || isVoiceFinalizing) ? 'chat-input-form-voice-active' : ''}`} onSubmit={handleSubmit}>
+        <form className={`chat-input-form ${(isVoiceListening || isVoiceFinalizing) ? 'chat-input-form-voice-active' : ''}`} onSubmit={handleSubmit}>
         <textarea
           ref={inputRef}
           className="chat-input"
@@ -841,11 +901,12 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
         </button>
       </form>
 
-      {remaining !== null && (
-        <div className="chat-remaining">
-          {50 - remaining} of 50 questions used today
-        </div>
-      )}
+        {remaining !== null && (
+          <div className="chat-remaining">
+            {50 - remaining} of 50 questions used today
+          </div>
+        )}
+      </div>
     </div>
   );
 }
