@@ -19,6 +19,8 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
   const messagesEndRef = useRef(null);
   const messageAnchorRefs = useRef(new Map());
   const inputRef = useRef(null);
+  const footerRef = useRef(null);
+  const messagesRef = useRef(null);
   const recognitionRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const mediaStreamRef = useRef(null);
@@ -109,6 +111,23 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
   useEffect(() => {
     queueGrowTextarea();
   }, [input]);
+
+  // Reserve exactly enough space at the bottom of the message list for the
+  // floating footer (input + status note + counter + safe-area inset) so the
+  // last line of an answer never scrolls underneath it. The footer height is
+  // dynamic, so measure it instead of guessing a fixed value.
+  useEffect(() => {
+    const footer = footerRef.current;
+    const messagesEl = messagesRef.current;
+    if (!footer || !messagesEl || typeof ResizeObserver === 'undefined') return;
+    const applyPadding = () => {
+      messagesEl.style.paddingBottom = `${footer.offsetHeight + 16}px`;
+    };
+    applyPadding();
+    const observer = new ResizeObserver(applyPadding);
+    observer.observe(footer);
+    return () => observer.disconnect();
+  }, []);
 
   function classifyTranscriptionError(errorMessage = '') {
     const msg = errorMessage.toLowerCase();
@@ -771,7 +790,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
 
   return (
     <div className="chat-window">
-      <div className="chat-messages">
+      <div className="chat-messages" ref={messagesRef}>
         {messages.length === 0 && !isLoading && (
           <div className="chat-empty">
             <p className="chat-welcome">
@@ -818,7 +837,7 @@ export default function ChatWindow({ messages, isLoading, error, remaining, onSe
         </button>
       )}
 
-      <div className="chat-footer">
+      <div className="chat-footer" ref={footerRef}>
         <div className="chat-status-slot" aria-live="polite">
           {voiceStatus && (
             <div className={voiceStatus.type === 'error' ? 'chat-voice-error' : 'chat-voice-note'} role={voiceStatus.type === 'error' ? 'alert' : 'status'}>
